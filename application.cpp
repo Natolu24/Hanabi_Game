@@ -1,6 +1,6 @@
 #include "application.hpp"
 
-Application::Application(sf::RenderWindow& window) : mWindow(window), mMenu(window, mFont), mGame(window, mFont) {
+Application::Application(sf::RenderWindow& window) : mWindow(window), mMenu(window, mFont), mSetting(window, mFont), mGame(window, mFont), mAITesting(window, mFont) {
     // Load global font for the application
     if (!mFont.loadFromFile("assets/FreeMono.ttf"))
     {
@@ -32,8 +32,14 @@ void Application::run()
                 case Scenes::MENU:
                     mMenu.handleEvent(event);
                     break;
+                case Scenes::SETTING:
+                    mSetting.handleEvent(event);
+                    break;
                 case Scenes::GAME:
-                    mGame.handleEvent(event);
+                    mMenu.handleEvent(event);
+                    break;
+                case Scenes::AITESTING:
+                    mAITesting.handleEvent(event);
                     break;
             }
         }
@@ -43,8 +49,14 @@ void Application::run()
             case Scenes::MENU:
                 mMenu.draw();
                 break;
+            case Scenes::SETTING:
+                mSetting.draw();
+                break;
             case Scenes::GAME:
                 mGame.draw();
+                break;
+            case Scenes::AITESTING:
+                mAITesting.draw();
                 break;
         }
     }
