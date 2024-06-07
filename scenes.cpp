@@ -43,8 +43,17 @@ MenuScene::MenuScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     aiText.setPosition(aiPosition + TEXT_OFFSET*80.0f);
 }
 
-void MenuScene::draw() 
+void MenuScene::draw(Scenes* mState)
 {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
+    if (playButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+    {
+    
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            *mState = Scenes::SETTING;
+        }
+    }
     mWindow.clear(sf::Color::Black);
     mWindow.draw(titleText);
     mWindow.draw(titleOutline);
@@ -63,7 +72,7 @@ void MenuScene::handleEvent(sf::Event)
 SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font)
 {
     // Load all UI textures
-    if (!returnButtonTexture.loadFromFile("assets/default_texture.png"))
+    if (!returnButtonTexture.loadFromFile("assets/default_texture_white.png"))
     {
         std::cout << "Error while loading return button texture" << std::endl;
         exit(EXIT_FAILURE);
@@ -73,11 +82,23 @@ SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(w
         std::cout << "Error while loading small button texture" << std::endl;
         exit(EXIT_FAILURE);
     }
+    if (!BackTextBlack.loadFromFile("assets/1.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
 
-    // Setup all UI elements
-    returnButton.setTexture(returnButtonTexture);
-    returnButton.setTextureRect({0, 0, 100, 100}); // Default Texture TMP Size Fixed
-    returnButton.setPosition(returnPosition);
+    }
+    if (!BackTextWhite.loadFromFile("assets/2.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Setup all UI element
+   // returnButton.setTexture(returnButtonTexture);
+   // returnButton.setTextureRect({0, 0, 100, 100}); // Default Texture TMP Size Fixed
+    returnButton.setPosition(10,10);
+
 
     smallButton.setTexture(smallButtonTexture);
     smallButton.setTextureRect({0, 0, 100, 100}); // Default Texture TMP Size Fixed
@@ -87,6 +108,7 @@ SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(w
     playerPlayText.setCharacterSize(60);
     playerPlayText.setFillColor(sf::Color::White);
     playerPlayText.setPosition(playerPlayPosition);
+    
 
     aiPlayText.setFont(mFont);
     aiPlayText.setString("AIs Only Game");
@@ -97,22 +119,83 @@ SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(w
     playText.setFont(mFont);
     playText.setString("PLAY");
     playText.setCharacterSize(80);
-    playText.setFillColor(sf::Color::White);
+    playText.setFillColor(sf::Color::Black);
     playText.setStyle(sf::Text::Bold);
-    playText.setPosition(playPosition);
+    playText.setPosition(150,500);
+    playButton.setTexture(smallButtonTexture);
+    playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
+    playButton.setPosition(130, 515);
+
+    Boarder1.setSize(Vector2f(250, 70));
+    Boarder1.setPosition(145, 20);
+    Boarder1.setFillColor(sf::Color::Transparent); 
+    Boarder1.setOutlineThickness(5); 
+    Boarder1.setOutlineColor(sf::Color::White); 
+
+    Boarder2.setSize(Vector2f(500, 70));
+    Boarder2.setPosition(550, 20);
+    Boarder2.setFillColor(sf::Color::Transparent); 
+    Boarder2.setOutlineThickness(5); 
+    Boarder2.setOutlineColor(sf::Color::White); 
 }
 
-void SettingScene::draw() 
+void SettingScene::draw(Scenes* mState)
 {
+
+    sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
+
+    if (returnButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+    {
+        returnButton.setTexture(BackTextBlack);
+        returnButton.setTextureRect({ 0, 0, 100, 100 }); // Default Texture TMP Size Fixed
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            *mState = Scenes::MENU;
+        }
+    }
+    else
+    {
+        returnButton.setTexture(BackTextWhite);
+        returnButton.setTextureRect({ 0, 0, 100, 100 }); // Default Texture TMP Size Fixed
+    }
+
+    if (playButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+    {
+        playButton.setTexture(smallButtonTexture);
+        playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
+        playButton.setPosition(130, 515);
+    }
+    else
+    {
+        playButton.setTexture(returnButtonTexture);
+        playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
+        playButton.setPosition(130, 515);
+    }
+
     mWindow.clear(sf::Color::Black);
     mWindow.draw(returnButton);
+    mWindow.draw(playButton);
     mWindow.draw(playerPlayText);
     mWindow.draw(aiPlayText);
+    mWindow.draw(Boarder1);
+    mWindow.draw(Boarder2);
     mWindow.draw(playText);
     for (int i = 0; i < 12; i++)
     {
         smallButton.setPosition(smallButtonPosition[i]);
+
+        if (smallButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+        {
+            smallButton.setTexture(smallButtonTexture);
+            smallButton.setTextureRect({ 0,0,80,80 });
+        }
+        else
+        {
+            smallButton.setTexture(returnButtonTexture);
+            smallButton.setTextureRect({ 0,0,80,80 });
+        }
         mWindow.draw(smallButton);
+
         smallButtonText[i].setPosition(smallButtonPosition[i]);
         smallButtonText[i].setString(smallButtonString[i]);
         mWindow.draw(smallButtonText[i]);
@@ -133,7 +216,7 @@ void SettingScene::handleEvent(sf::Event)
 
 GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font) {}
 
-void GameScene::draw() 
+void GameScene::draw()
 {
     mWindow.clear(sf::Color::Black);
     mWindow.display();
@@ -146,7 +229,7 @@ void GameScene::handleEvent(sf::Event)
 
 AITestingScene::AITestingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font) {}
 
-void AITestingScene::draw() 
+void AITestingScene::draw()
 {
     mWindow.clear(sf::Color::Black);
     mWindow.display();

@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "gamesystem.hpp"
-
+using namespace sf;
 enum class Scenes { MENU, SETTING, GAME, AITESTING };
 
 class MenuScene
@@ -22,7 +22,7 @@ class MenuScene
     sf::Vector2f aiPosition{600.0f, 450.0f};
 public:
     MenuScene(sf::RenderWindow& window, sf::Font& font);
-    void draw();
+    void draw(Scenes* mState);
     void handleEvent(sf::Event);
 };
 
@@ -33,14 +33,18 @@ class SettingScene
     // UI Textures
     sf::Texture returnButtonTexture;
     sf::Texture smallButtonTexture;
+    sf::Texture BackTextWhite;
+    sf::Texture BackTextBlack;
     // UI Elements and positions
     sf::Sprite returnButton;
+    sf::Sprite playButton;
     sf::Vector2f returnPosition{10.0f, 10.0f};
     sf::Text playerPlayText;
     sf::Vector2f playerPlayPosition{160.0f, 10.0f};
     sf::Text aiPlayText;
     sf::Vector2f aiPlayPosition{570.0f, 10.0f};
     sf::Text playText;
+    sf::Text backText;
     sf::Vector2f playPosition{390.0f, 540.0f};
     sf::Sprite smallButton;
     std::array<sf::Text, 12> smallButtonText;
@@ -53,9 +57,15 @@ class SettingScene
     sf::Vector2f seperatorLineSize{10.0f, 40.0f};
     float seperatorLineOffset = 15.0f;
     int seperatorLineNumber = 10;
+
+    RectangleShape Boarder1;
+    RectangleShape Boarder2;
+
+
 public:
+    
     SettingScene(sf::RenderWindow& window, sf::Font& font);
-    void draw();
+    void draw(Scenes* mState);
     void handleEvent(sf::Event);
 };
 

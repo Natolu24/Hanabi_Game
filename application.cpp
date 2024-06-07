@@ -47,10 +47,10 @@ void Application::run()
         switch(mState)
         {
             case Scenes::MENU:
-                mMenu.draw();
+                mMenu.draw(&mState);
                 break;
             case Scenes::SETTING:
-                mSetting.draw();
+                mSetting.draw(&mState);
                 break;
             case Scenes::GAME:
                 mGame.draw();
