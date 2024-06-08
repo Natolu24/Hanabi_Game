@@ -50,8 +50,8 @@ class SettingScene
     std::array<sf::Text, 12> smallButtonText;
     std::array<sf::String, 12> smallButtonString{"2", "3", "4", "5", "2", "3", "4", "5", "Certainty", "Omniscient", "Rule-Based", "Hat-Principle"};
     std::array<sf::Vector2f, 12> smallButtonPosition{sf::Vector2f(160.0f, 230.0f), sf::Vector2f(270.0f, 230.0f), sf::Vector2f(160.0f, 340.0f), sf::Vector2f(270.0f, 340.0f), 
-                                                    sf::Vector2f(600.0f, 230.0f), sf::Vector2f(710.0f, 230.0f), sf::Vector2f(820.0f, 230.0f), sf::Vector2f(930.0f, 230.0f), 
-                                                    sf::Vector2f(600.0f, 340.0f), sf::Vector2f(710.0f, 340.0f), sf::Vector2f(820.0f, 340.0f), sf::Vector2f(930.0f, 340.0f)};
+                                                     sf::Vector2f(540.0f, 130.0f), sf::Vector2f(540.0f, 230.0f), sf::Vector2f(540.0f, 330.0f), sf::Vector2f(540.0f, 430.0f),
+                                                     sf::Vector2f(650.0f, 130.0f), sf::Vector2f(650.0f, 230.0f), sf::Vector2f(650.0f, 330.0f), sf::Vector2f(650.0f, 430.0f)};
     sf::RectangleShape seperatorLine;
     sf::Vector2f seperatorLinePosition{470.0f, 0.0f};
     sf::Vector2f seperatorLineSize{10.0f, 40.0f};
