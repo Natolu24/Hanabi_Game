@@ -121,22 +121,22 @@ SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(w
     playText.setCharacterSize(80);
     playText.setFillColor(sf::Color::Black);
     playText.setStyle(sf::Text::Bold);
-    playText.setPosition(150,500);
+    playText.setPosition(450,550);
     playButton.setTexture(smallButtonTexture);
     playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
-    playButton.setPosition(130, 515);
+    playButton.setPosition(430, 565);
 
     Boarder1.setSize(Vector2f(250, 70));
     Boarder1.setPosition(145, 20);
-    Boarder1.setFillColor(sf::Color::Transparent); 
-    Boarder1.setOutlineThickness(5); 
-    Boarder1.setOutlineColor(sf::Color::White); 
+    Boarder1.setFillColor(sf::Color::Transparent); // Hollow inside
+    Boarder1.setOutlineThickness(5); // Thickness of the border
+    Boarder1.setOutlineColor(sf::Color::White); // Color of the border
 
     Boarder2.setSize(Vector2f(500, 70));
     Boarder2.setPosition(550, 20);
-    Boarder2.setFillColor(sf::Color::Transparent); 
-    Boarder2.setOutlineThickness(5); 
-    Boarder2.setOutlineColor(sf::Color::White); 
+    Boarder2.setFillColor(sf::Color::Transparent); // Hollow inside
+    Boarder2.setOutlineThickness(5); // Thickness of the border
+    Boarder2.setOutlineColor(sf::Color::White); // Color of the border
 }
 
 void SettingScene::draw(Scenes* mState)
@@ -149,7 +149,7 @@ void SettingScene::draw(Scenes* mState)
         returnButton.setTexture(BackTextBlack);
         returnButton.setTextureRect({ 0, 0, 100, 100 }); // Default Texture TMP Size Fixed
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-        {
+        {           
             *mState = Scenes::MENU;
         }
     }
@@ -163,13 +163,11 @@ void SettingScene::draw(Scenes* mState)
     {
         playButton.setTexture(smallButtonTexture);
         playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
-        playButton.setPosition(130, 515);
     }
     else
     {
         playButton.setTexture(returnButtonTexture);
         playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
-        playButton.setPosition(130, 515);
     }
 
     mWindow.clear(sf::Color::Black);
@@ -187,19 +185,72 @@ void SettingScene::draw(Scenes* mState)
         if (smallButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
         {
             smallButton.setTexture(smallButtonTexture);
-            smallButton.setTextureRect({ 0,0,80,80 });
+            if (i >= 0 && i <= 7)
+                smallButton.setTextureRect({ 0,0,80,80 });
+            if (i >= 8 && i <= 11)
+                smallButton.setTextureRect({ 0,0,500,80 });
+
+            if (i >= 0 && i <= 3)
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+                    smallButtonString[i] = '2';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+                    smallButtonString[i] = '3';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+                    smallButtonString[i] = '4';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+                    smallButtonString[i] = '5';
+                }
+            }
+            else if (i >= 4 && i <= 7)
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+                    smallButtonString[i] = '2';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+                    smallButtonString[i] = '3';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+                    smallButtonString[i] = '4';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+                    smallButtonString[i] = '5';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
+                    smallButtonString[i] = '6';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
+                    smallButtonString[i] = '7';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
+                    smallButtonString[i] = '8';
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
+                    smallButtonString[i] = '9';
+                }
+            }
         }
         else
         {
             smallButton.setTexture(returnButtonTexture);
-            smallButton.setTextureRect({ 0,0,80,80 });
+            if (i >= 0 && i <= 7)
+                smallButton.setTextureRect({ 0,0,80,80 });
+            if (i >= 8 && i <= 11)
+                smallButton.setTextureRect({ 0,0,500,80 });
         }
         mWindow.draw(smallButton);
 
-        smallButtonText[i].setPosition(smallButtonPosition[i]);
+        smallButtonText[i].setFont(mFont);
+        smallButtonText[i].setPosition(smallButtonPosition[i].x+20, smallButtonPosition[i].y );
         smallButtonText[i].setString(smallButtonString[i]);
+        smallButtonText[i].setCharacterSize(60);
+        smallButtonText[i].setFillColor(sf::Color::Black);
         mWindow.draw(smallButtonText[i]);
     }
+
     seperatorLine.setSize(seperatorLineSize);
     for (int i = 0; i < seperatorLineNumber; i++)
     {
@@ -239,3 +290,4 @@ void AITestingScene::handleEvent(sf::Event)
 {
 
 }
+
