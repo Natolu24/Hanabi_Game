@@ -8,7 +8,7 @@ class Application
     sf::RenderWindow& mWindow;
     sf::Font mFont;
     // The state determining wich current scene is running
-    Scenes mState = Scenes::MENU;
+    Scenes mState = Scenes::GAME;
     // All the different scenes of the application
     MenuScene mMenu;
     SettingScene mSetting;

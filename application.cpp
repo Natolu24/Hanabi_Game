@@ -36,7 +36,7 @@ void Application::run()
                     mSetting.handleEvent(event);
                     break;
                 case Scenes::GAME:
-                    mMenu.handleEvent(event);
+                    mGame.handleEvent(event);
                     break;
                 case Scenes::AITESTING:
                     mAITesting.handleEvent(event);

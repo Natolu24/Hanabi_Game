@@ -141,10 +141,10 @@ SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(w
 
 void SettingScene::draw(Scenes* mState)
 {
+    sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
+    sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
 
-    sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-
-    if (returnButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+    if (returnButton.getGlobalBounds().contains(mousePos))
     {
         returnButton.setTexture(BackTextBlack);
         returnButton.setTextureRect({ 0, 0, 100, 100 }); // Default Texture TMP Size Fixed
@@ -159,7 +159,7 @@ void SettingScene::draw(Scenes* mState)
         returnButton.setTextureRect({ 0, 0, 100, 100 }); // Default Texture TMP Size Fixed
     }
 
-    if (playButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+    if (playButton.getGlobalBounds().contains(mousePos))
     {
         playButton.setTexture(smallButtonTexture);
         playButton.setTextureRect({ 0, 0, 240, 80 }); // Default Texture TMP Size Fixed
@@ -214,17 +214,466 @@ void SettingScene::handleEvent(sf::Event)
 
 }
 
-GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font) {}
+GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font)
+{
+    if (!BackTextBlack.loadFromFile("assets/1.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    if (!BackTextWhite.loadFromFile("assets/2.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    
+    returnButton.setPosition(10,10);
+    returnButton.setTextureRect({ 0, 0, 100, 100 });
+
+    logOutline.setPosition(logOutlinePosition);
+    logOutline.setSize(logOutlineSize);
+    logOutline.setFillColor(sf::Color::Transparent);
+    logOutline.setOutlineColor(sf::Color(124, 124, 124));
+    logOutline.setOutlineThickness(5.0f);
+
+    switchButton.setPosition(switchPosition);
+    switchButton.setSize(switchSize);
+    switchButton.setFillColor(sf::Color::White);
+    switchText.setFont(mFont);
+    switchText.setString("Switch");
+    switchText.setPosition(switchPosition + switchTextOffset);
+    switchText.setCharacterSize(30);
+    switchText.setFillColor(sf::Color::Black);
+
+    miniHint.setSize(miniHintSize);
+    miniLine.setSize(miniLineSize);
+    miniLine.setFillColor(sf::Color::Black);
+    miniLine.setRotation(45.0f);
+    miniText.setFont(mFont);
+    miniText.setCharacterSize(18);
+    miniText.setFillColor(sf::Color::Black);
+
+    card.setSize(cardSize);
+    card.setOutlineColor(sf::Color(124, 124, 124));
+    cardsOutlineCollider.setFillColor(sf::Color::Transparent);
+    cardsOutlineCollider.setOutlineColor(sf::Color(124, 124, 124));
+    cardsOutlineCollider.setOutlineThickness(5.0f);
+    cardText.setFont(mFont);
+    cardText.setCharacterSize(80);
+    cardText.setFillColor(sf::Color::Black);
+    aiIdText.setFont(mFont);
+    aiIdText.setCharacterSize(60);
+    aiIdText.setFillColor(sf::Color::White);
+
+    hintButton.setSize(hintSize);
+    hintButton.setOutlineColor(sf::Color(124, 124, 124));
+    hintText.setFont(mFont);
+    hintText.setCharacterSize(40);
+    hintText.setFillColor(sf::Color::Black);
+
+    gameplayPlayButton.setPosition(gameplayPlayPosition);
+    gameplayPlayButton.setSize(gameplayPlaySize);
+    gameplayPlayButton.setFillColor(sf::Color::White);
+    gameplayPlayText.setFont(mFont);
+    gameplayPlayText.setString("Play");
+    gameplayPlayText.setPosition(gameplayPlayPosition + gameplayPlayTextOffset);
+    gameplayPlayText.setCharacterSize(30);
+    gameplayPlayText.setFillColor(sf::Color::Black);
+
+    gameplayDiscardButton.setPosition(gameplayDiscardPosition);
+    gameplayDiscardButton.setSize(gameplayDiscardSize);
+    gameplayDiscardButton.setFillColor(sf::Color::White);
+    gameplayDiscardText.setFont(mFont);
+    gameplayDiscardText.setString("Discard");
+    gameplayDiscardText.setPosition(gameplayDiscardPosition + gameplayDiscardTextOffset);
+    gameplayDiscardText.setCharacterSize(30);
+    gameplayDiscardText.setFillColor(sf::Color::Black);
+
+    gameplayHintButton.setPosition(gameplayHintPosition);
+    gameplayHintButton.setSize(gameplayHintSize);
+    gameplayHintButton.setFillColor(sf::Color::White);
+    gameplayHintText.setFont(mFont);
+    gameplayHintText.setString("Hint");
+    gameplayHintText.setPosition(gameplayHintPosition + gameplayHintTextOffset);
+    gameplayHintText.setCharacterSize(30);
+    gameplayHintText.setFillColor(sf::Color::Black);
+
+    infosOutline.setPosition(infosOutlinePosition);
+    infosOutline.setSize(infosOutlineSize);
+    infosOutline.setFillColor(sf::Color::Transparent);
+    infosOutline.setOutlineColor(sf::Color(124, 124, 124));
+    infosOutline.setOutlineThickness(5.0f);
+    infosLine1.setPosition(infosLine1Position);
+    infosLine1.setSize(infosLine1Size);
+    infosLine1.setFillColor(sf::Color(124, 124, 124));
+    infosLine2.setPosition(infosLine2Position);
+    infosLine2.setSize(infosLine2Size);
+    infosLine2.setFillColor(sf::Color(124, 124, 124));
+
+    infosTurnText.setFont(mFont);
+    infosTurnText.setString("T. 99");
+    infosTurnText.setPosition(infosTurnTextPosition + infosTurnTextOffset);
+    infosTurnText.setCharacterSize(40);
+    infosTurnText.setFillColor(sf::Color::White);
+    infosScoreText.setFont(mFont);
+    infosScoreText.setString("25/25");
+    infosScoreText.setPosition(infosScoreTextPosition + infosScoreTextOffset);
+    infosScoreText.setCharacterSize(40);
+    infosScoreText.setFillColor(sf::Color::White);
+
+    infosTokenBlue.setPosition(infosTokenBluePosition);
+    infosTokenBlue.setRadius(infosTokenBlueRadius);
+    infosTokenBlue.setFillColor(sf::Color::Blue);
+    infosTokenRed.setPosition(infosTokenRedPosition);
+    infosTokenRed.setRadius(infosTokenRedRadius);
+    infosTokenRed.setFillColor(sf::Color::Red);
+    infosTokenBlueText.setFont(mFont);
+    infosTokenBlueText.setString("x8");
+    infosTokenBlueText.setPosition(infosTokenBlueTextPosition + infosTokenBlueTextOffset);
+    infosTokenBlueText.setCharacterSize(40);
+    infosTokenBlueText.setFillColor(sf::Color::White);
+    infosTokenRedText.setFont(mFont);
+    infosTokenRedText.setString("x3");
+    infosTokenRedText.setPosition(infosTokenRedTextPosition + infosTokenRedTextOffset);
+    infosTokenRedText.setCharacterSize(40);
+    infosTokenRedText.setFillColor(sf::Color::White);
+
+    discardOutline.setPosition(discardOutlinePosition);
+    discardOutline.setSize(discardOutlineSize);
+    discardOutline.setFillColor(sf::Color::Transparent);
+    discardOutline.setOutlineColor(sf::Color(124, 124, 124));
+    discardOutline.setOutlineThickness(5.0f);
+}
+
+void GameScene::setup()
+{
+    //mGame.setup()
+
+
+}
 
 void GameScene::draw()
 {
+    sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
+    sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
+
+    if (returnButton.getGlobalBounds().contains(mousePos))
+    {
+        returnButton.setTexture(BackTextBlack);
+    }
+    else
+    {
+        returnButton.setTexture(BackTextWhite);
+    }
+    
     mWindow.clear(sf::Color::Black);
+    // Return Button
+    mWindow.draw(returnButton);
+    // Log
+    mWindow.draw(logOutline);
+    // Switch Cards Button
+    if (switchButton.getGlobalBounds().contains(mousePos))
+    {
+        switchButton.setFillColor(sf::Color(124, 124, 124));
+    }
+    else
+    {
+        switchButton.setFillColor(sf::Color::White);
+    }
+    mWindow.draw(switchButton);
+    mWindow.draw(switchText);
+    // AIs Cards
+    card.setOutlineThickness(0.0f); // reset thickness in case previous modification is still active
+    if (showFrontCard) // Show the card itself of the others AIs
+    {
+        for (int lin = 0; lin < 4; lin++) // replace by number of players
+        {
+            for (int col = 0; col < 5; col++) // replace by number of cards in hand +1
+            {
+                sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), (cardSize.y + cardOffset.y) * float(lin));
+                if (col == 4) // replace by number of cards in hand
+                {
+                    aiIdText.setPosition(cardAIPosition + offsetPosition);
+                    aiIdText.setString("#" + std::to_string(lin+1));
+                    mWindow.draw(aiIdText);
+                    break;
+                }
+                card.setPosition(cardAIPosition + offsetPosition);
+                card.setFillColor(sf::Color::White); // replace by "switch" to cardattribute
+                cardText.setPosition(cardAIPosition + offsetPosition + cardTextOffset);
+                cardText.setString("5"); // replace by "switch" to cardattribute
+                mWindow.draw(card);
+                mWindow.draw(cardText);
+            }
+            sf::Vector2f colliderPosition(0.0f, (cardSize.y + cardOffset.y) * float(lin));
+            sf::Vector2f colliderSize((cardSize.x + cardOffset.x) * 4 + cardSize.x, cardSize.y);
+            cardsOutlineCollider.setPosition(cardAIPosition + colliderPosition);
+            cardsOutlineCollider.setSize(colliderSize);
+            if (cardsOutlineCollider.getGlobalBounds().contains(mousePos))
+            {
+                mWindow.draw(cardsOutlineCollider);
+            }
+        }
+    }
+    else // Otherwise show its "back", but mostly with the indirect hints given
+    {
+        card.setFillColor(sf::Color(200, 200, 200));
+        for (int lin = 0; lin < 4; lin++) // replace by number of players
+        {
+            for (int col = 0; col < 5; col++) // replace by number of cards in hand +1
+            {
+                sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), (cardSize.y + cardOffset.y) * float(lin));
+                if (col == 4) // replace by number of cards in hand
+                {
+                    aiIdText.setPosition(cardAIPosition + offsetPosition);
+                    aiIdText.setString("#" + std::to_string(lin+1));
+                    mWindow.draw(aiIdText);
+                    break;
+                }
+                card.setPosition(cardAIPosition + offsetPosition);
+                mWindow.draw(card);
+                for (int i = 0; i < 5; i++) // Color Indirect Hints
+                {
+                    sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y);
+                    if (col < 2) // replace by checking with the indirect hints of the card
+                    {
+                        miniHint.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                        switch(i)
+                        {
+                            case 0:
+                                miniHint.setFillColor(sf::Color::White);
+                                break;
+                            case 1:
+                                miniHint.setFillColor(sf::Color::Blue);
+                                break;
+                            case 2:
+                                miniHint.setFillColor(sf::Color::Yellow);
+                                break;
+                            case 3:
+                                miniHint.setFillColor(sf::Color::Red);
+                                break;
+                            case 4:
+                                miniHint.setFillColor(sf::Color::Green);
+                                break;
+                        }
+                        mWindow.draw(miniHint);
+                    }
+                    else
+                    {
+                        miniLine.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                        mWindow.draw(miniLine);
+
+                    }
+                }
+                for (int i = 0; i < 5; i++) // Number Indirect Hints
+                {
+                    sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y + miniHintSize.y + miniHintOffset.y);
+                    if (col < 2) // replace by checking with the indirect hints of the card
+                    {
+                        miniText.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition + miniHintTextOffset);
+                        miniText.setString(std::to_string(i+1));
+                        mWindow.draw(miniText);
+                    }
+                    else
+                    {
+                        miniLine.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                        mWindow.draw(miniLine);
+
+                    }
+                }
+            }
+            sf::Vector2f colliderPosition(0.0f, (cardSize.y + cardOffset.y) * float(lin));
+            sf::Vector2f colliderSize((cardSize.x + cardOffset.x) * 4 + cardSize.x, cardSize.y);
+            cardsOutlineCollider.setPosition(cardAIPosition + colliderPosition);
+            cardsOutlineCollider.setSize(colliderSize);
+            if (cardsOutlineCollider.getGlobalBounds().contains(mousePos))
+            {
+                mWindow.draw(cardsOutlineCollider);
+            }
+        }
+    }
+    card.setFillColor(sf::Color(200, 200, 200)); // back side for player (light gray)
+    // "Player" Cards
+    for (int col = 0; col < 5; col++) // replace by number of cards in hand
+    {
+        sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), 0.0f);
+        card.setPosition(cardPlayerPosition + offsetPosition);
+        if (card.getGlobalBounds().contains(mousePos))
+        {
+            card.setOutlineThickness(5.0f);
+        }
+        else
+        {
+            card.setOutlineThickness(0.0f);
+        }
+        mWindow.draw(card);
+        for (int i = 0; i < 5; i++) // Color Indirect Hints
+        {
+            sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y);
+            if (col < 2) // replace by checking with the indirect hints of the card
+            {
+                miniHint.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
+                switch(i)
+                {
+                    case 0:
+                        miniHint.setFillColor(sf::Color::White);
+                        break;
+                    case 1:
+                        miniHint.setFillColor(sf::Color::Blue);
+                        break;
+                    case 2:
+                        miniHint.setFillColor(sf::Color::Yellow);
+                        break;
+                    case 3:
+                        miniHint.setFillColor(sf::Color::Red);
+                        break;
+                    case 4:
+                        miniHint.setFillColor(sf::Color::Green);
+                        break;
+                }
+                mWindow.draw(miniHint);
+            }
+            else
+            {
+                miniLine.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
+                mWindow.draw(miniLine);
+
+            }
+        }
+        for (int i = 0; i < 5; i++) // Number Indirect Hints
+        {
+            sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y + miniHintSize.y + miniHintOffset.y);
+            if (col < 2) // replace by checking with the indirect hints of the card
+            {
+                miniText.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition + miniHintTextOffset);
+                miniText.setString(std::to_string(i+1));
+                mWindow.draw(miniText);
+            }
+            else
+            {
+                miniLine.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
+                mWindow.draw(miniLine);
+
+            }
+        }
+    }
+    // Color Hint Buttons
+    for (int col = 0; col < 5; col++)
+    {
+        sf::Vector2f offsetPosition((hintSize.x + cardOffset.x) * float(col), 0.0f);
+        hintButton.setPosition(hintPosition + offsetPosition);
+        switch(col)
+        {
+            case 0:
+                hintButton.setFillColor(sf::Color::White);
+                break;
+            case 1:
+                hintButton.setFillColor(sf::Color::Blue);
+                break;
+            case 2:
+                hintButton.setFillColor(sf::Color::Yellow);
+                break;
+            case 3:
+                hintButton.setFillColor(sf::Color::Red);
+                break;
+            case 4:
+                hintButton.setFillColor(sf::Color::Green);
+                break;
+        }
+        if (hintButton.getGlobalBounds().contains(mousePos))
+        {
+            hintButton.setOutlineThickness(5.0f);
+        }
+        else
+        {
+            hintButton.setOutlineThickness(0.0f);
+        }
+        mWindow.draw(hintButton);
+    }
+    // Number Hint Buttons
+    hintButton.setFillColor(sf::Color(200, 200, 200));
+    for (int col = 0; col < 5; col++)
+    {
+        sf::Vector2f offsetPosition((hintSize.x + cardOffset.x) * float(col), hintSize.y + 10.0f);
+        hintButton.setPosition(hintPosition + offsetPosition);
+        hintText.setPosition(hintPosition + offsetPosition + hintTextOffset);
+        hintText.setString(std::to_string(col+1));
+        if (hintButton.getGlobalBounds().contains(mousePos))
+        {
+            hintButton.setOutlineThickness(5.0f);
+        }
+        else
+        {
+            hintButton.setOutlineThickness(0.0f);
+        }
+        mWindow.draw(hintButton);
+        mWindow.draw(hintText);
+    }
+    // Gameplay Play Button
+    if (gameplayPlayButton.getGlobalBounds().contains(mousePos))
+    {
+        gameplayPlayButton.setFillColor(sf::Color(124, 124, 124));
+    }
+    else
+    {
+        gameplayPlayButton.setFillColor(sf::Color::White);
+    }
+    mWindow.draw(gameplayPlayButton);
+    mWindow.draw(gameplayPlayText);
+    // Gameplay Discard Button
+    if (gameplayDiscardButton.getGlobalBounds().contains(mousePos))
+    {
+        gameplayDiscardButton.setFillColor(sf::Color(124, 124, 124));
+    }
+    else
+    {
+        gameplayDiscardButton.setFillColor(sf::Color::White);
+    }
+    mWindow.draw(gameplayDiscardButton);
+    mWindow.draw(gameplayDiscardText);
+    // Gameplay Hint Button
+    if (gameplayHintButton.getGlobalBounds().contains(mousePos))
+    {
+        gameplayHintButton.setFillColor(sf::Color(124, 124, 124));
+    }
+    else
+    {
+        gameplayHintButton.setFillColor(sf::Color::White);
+    }
+    mWindow.draw(gameplayHintButton);
+    mWindow.draw(gameplayHintText);
+    // Infos Outlines
+    mWindow.draw(infosOutline);
+    mWindow.draw(infosLine1);
+    mWindow.draw(infosLine2);
+    // Infos Turn and Score
+    mWindow.draw(infosTurnText);
+    mWindow.draw(infosScoreText);
+    // Infos Tokens
+    mWindow.draw(infosTokenBlue);
+    mWindow.draw(infosTokenBlueText);
+    mWindow.draw(infosTokenRed);
+    mWindow.draw(infosTokenRedText);
+    // Discard Pile
+    mWindow.draw(discardOutline);
+
     mWindow.display();
 }
 
-void GameScene::handleEvent(sf::Event)
+void GameScene::handleEvent(sf::Event event)
 {
-
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
+        sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
+        if (event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (switchButton.getGlobalBounds().contains(mousePos))
+            {
+                showFrontCard = !showFrontCard;
+            }
+        }
+    }
 }
 
 AITestingScene::AITestingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font) {}

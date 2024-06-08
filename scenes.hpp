@@ -71,12 +71,106 @@ public:
 
 class GameScene
 {
+    GameSystem mGame;
+    bool showFrontCard = true;
     sf::RenderWindow& mWindow;
     sf::Font& mFont;
     // UI Textures
+    sf::Texture BackTextWhite;
+    sf::Texture BackTextBlack;
     // UI Elements and positions
+    // RETURN BUTTON
+    sf::Sprite returnButton;
+    sf::Vector2f returnPosition{10.0f, 10.0f};
+    // LOG OUTLINE
+    sf::RectangleShape logOutline;
+    sf::Vector2f logOutlinePosition{10.0f, 180.0f};
+    sf::Vector2f logOutlineSize{350.0f, 485.0f};
+    // SWITCH CARD BUTTON
+    sf::RectangleShape switchButton;
+    sf::Text switchText;
+    sf::Vector2f switchPosition{240.0f, 10.0f};
+    sf::Vector2f switchSize{130.0f, 60.0f};
+    sf::Vector2f switchTextOffset{11.0f, 7.0f};
+    // CARDS
+    sf::RectangleShape card;
+    sf::RectangleShape cardsOutlineCollider;
+    sf::Text cardText;
+    sf::Vector2f cardAIPosition{390.0f, 10.0f};
+    sf::Vector2f cardPlayerPosition{390.0f, 585.0f};
+    sf::Vector2f cardSize{80.0f, 80.0f};
+    sf::Vector2f cardOffset{10.0f, 10.0f};
+    sf::Vector2f cardTextOffset{16.0f, -16.0f};
+    // MINI HINTS WITHIN CARDS
+    sf::RectangleShape miniHint;
+    sf::RectangleShape miniLine;
+    sf::Text miniText;
+    sf::Vector2f miniHintPosition{11.0f, 16.0f};
+    sf::Vector2f miniHintSize{10.0f, 16.0f};
+    sf::Vector2f miniLineSize{19.0f, 2.0f};
+    sf::Vector2f miniHintOffset{2.0f, 16.0f};
+    sf::Vector2f miniHintTextOffset{0.0f, -4.5f};
+    // AIs ID
+    sf::Text aiIdText;
+    // HINT BUTTONS
+    sf::RectangleShape hintButton;
+    sf::Text hintText;
+    sf::Vector2f hintPosition{390.0f, 380.0f};
+    sf::Vector2f hintSize{80.0f, 30.0f};
+    sf::Vector2f hintTextOffset{28.0f, -13.0f};
+    // GAMEPLAY BUTTONS
+    sf::RectangleShape gameplayPlayButton;
+    sf::Text gameplayPlayText;
+    sf::Vector2f gameplayPlayPosition{430.0f, 510.0f};
+    sf::Vector2f gameplayPlaySize{130.0f, 60.0f};
+    sf::Vector2f gameplayPlayTextOffset{29.0f, 7.0f};
+    sf::RectangleShape gameplayDiscardButton;
+    sf::Text gameplayDiscardText;
+    sf::Vector2f gameplayDiscardPosition{570.0f, 510.0f};
+    sf::Vector2f gameplayDiscardSize{130.0f, 60.0f};
+    sf::Vector2f gameplayDiscardTextOffset{2.0f, 7.0f};
+    sf::RectangleShape gameplayHintButton;
+    sf::Text gameplayHintText;
+    sf::Vector2f gameplayHintPosition{750.0f, 470.0f};
+    sf::Vector2f gameplayHintSize{80.0f, 60.0f};
+    sf::Vector2f gameplayHintTextOffset{4.0f, 7.0f};
+    // GAME INFOS OUTLINE
+    sf::RectangleShape infosOutline;
+    sf::Vector2f infosOutlinePosition{940.0f, 10.0f};
+    sf::Vector2f infosOutlineSize{250.0f, 130.0f};
+    sf::RectangleShape infosLine1;
+    sf::Vector2f infosLine1Position{940.0f, 72.5f};
+    sf::Vector2f infosLine1Size{125.0f, 5.0f};
+    sf::RectangleShape infosLine2;
+    sf::Vector2f infosLine2Position{1062.5f, 10.0f};
+    sf::Vector2f infosLine2Size{5.0f, 130.0f};
+    // GAME INFOS TURN AND SCORE
+    sf::Text infosTurnText;
+    sf::Vector2f infosTurnTextPosition{940.0f, 10.0f};
+    sf::Vector2f infosTurnTextOffset{0.0f, 0.0f};
+    sf::Text infosScoreText;
+    sf::Vector2f infosScoreTextPosition{940.0f, 77.5f};
+    sf::Vector2f infosScoreTextOffset{0.0f, 0.0f};
+    // GAME INFOS TOKENS
+    sf::CircleShape infosTokenBlue;
+    sf::Vector2f infosTokenBluePosition{1077.5f, 20.0f};
+    float infosTokenBlueRadius = 21.25f;
+    sf::CircleShape infosTokenRed;
+    sf::Vector2f infosTokenRedPosition{1077.5f, 87.5f};
+    float infosTokenRedRadius = 21.25f;
+    sf::Text infosTokenBlueText;
+    sf::Vector2f infosTokenBlueTextPosition{1130.0f, 10.0f};
+    sf::Vector2f infosTokenBlueTextOffset{0.0f, 0.0f};
+    sf::Text infosTokenRedText;
+    sf::Vector2f infosTokenRedTextPosition{1130.0f, 77.5f};
+    sf::Vector2f infosTokenRedTextOffset{0.0f, 0.0f};
+    // DISCARDED PILE
+    sf::RectangleShape discardOutline;
+    sf::Vector2f discardOutlinePosition{860.0f, 180.0f};
+    sf::Vector2f discardOutlineSize{330.0f, 485.0f};
 public:
     GameScene(sf::RenderWindow& window, sf::Font& font);
+    void setup();
     void draw();
     void handleEvent(sf::Event);
 };
