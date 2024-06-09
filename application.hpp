@@ -7,14 +7,14 @@ class Application
 {
     sf::RenderWindow& mWindow;
     sf::Font mFont;
+public:
     // The state determining wich current scene is running
-    Scenes mState = Scenes::SETTING;
+    Scenes mState = Scenes::GAME;
     // All the different scenes of the application
     MenuScene mMenu;
     SettingScene mSetting;
     GameScene mGame;
     AITestingScene mAITesting;
-public:
     Application(sf::RenderWindow& window);
     void run();
 };

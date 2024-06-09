@@ -69,6 +69,10 @@ void MenuScene::handleEvent(sf::Event)
 
 }
 
+PlayerCount SettingScene::playerGameCount = PlayerCount::FivePlayers; // tmp value, need to be set to null
+PlayerCount SettingScene::aiGameCount = PlayerCount::null; // tmp value, need to be set to null
+AITypes SettingScene::aiGameType = AITypes::null; // tmp value, need to be set to null
+
 SettingScene::SettingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font)
 {
     // Load all UI textures
@@ -264,7 +268,7 @@ void SettingScene::handleEvent(sf::Event)
 
 }
 
-GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font)
+GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font), game(SettingScene::playerGameCount) // TMP TO BE DELETED
 {
     if (!BackTextBlack.loadFromFile("assets/1.png"))
     {

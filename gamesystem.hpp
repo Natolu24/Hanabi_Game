@@ -5,38 +5,60 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <algorithm>
+#include <random>
+#include <chrono>
 #include "players.hpp"
 
-enum class PlayerCount { P2 = 2, P3, P4, P5 };
-enum class AITypes { Certainty, Omniscient, RuleBased, HatPrinciple };
-enum class cardAttribute { One, Two, Three, Four, Five, White, Blue, Yellow, Red, Green };
+enum class PlayerCount { null, TwoPlayers = 2, ThreePlayers, FourPlayers, FivePlayers };
+enum class AITypes { null, Certainty, Omniscient, RuleBased, HatPrinciple };
+enum class Player { null, P0, P1, P2, P3, P4 };
+enum class CardAttribute { null, One, Two, Three, Four, Five, White, Blue, Yellow, Red, Green };
 
 class Card
 {
 public:
-    cardAttribute number;
-    cardAttribute color;
-    std::array<cardAttribute, 5> directAttributeHints;
-    std::array<cardAttribute, 10> indirectAttributeHints = {cardAttribute::One, cardAttribute::Two, cardAttribute::Three, cardAttribute::Four, cardAttribute::Five,
-                                                            cardAttribute::White, cardAttribute::Blue, cardAttribute::Yellow, cardAttribute::Red, cardAttribute::Green };
-    void addHint(cardAttribute attribute, bool isDirectHint);
+    CardAttribute number;
+    CardAttribute color;
+    std::array<CardAttribute, 10> indirectAttributeHints = {CardAttribute::One, CardAttribute::Two, CardAttribute::Three, CardAttribute::Four, CardAttribute::Five,
+                                                            CardAttribute::White, CardAttribute::Blue, CardAttribute::Yellow, CardAttribute::Red, CardAttribute::Green };
+    Card(CardAttribute number, CardAttribute color);
+    void addHint(CardAttribute attribute, bool isDirectHint);
 };
 
 class GameSystem
 {
 public:
     PlayerCount playersNumber;
-    int wichPlayerTurn, score, hintTokens, errorTokens;
+    AITypes aiType = AITypes::null;
+    int wichPlayerTurn, score, hintTokens, errorTokens, endCountdown = -1;
+    bool gameEnd, isInstantAIGame = false;
+    std::chrono::time_point<std::chrono::high_resolution_clock> time, timer;
+    int delay = 1000;
     std::vector<Card> drawPile, discardPile;
-    std::vector<std::string> logList;
+    std::vector<std::string> logList; // ajouter sa à "GameScene"
     std::vector<Card> p0;
     std::vector<Card> p1;
     std::vector<Card> p2;
     std::vector<Card> p3;
     std::vector<Card> p4;
-    void startGame();
+    CardAttribute whiteStack = CardAttribute::null;
+    CardAttribute blueStack = CardAttribute::null;
+    CardAttribute yellowStack = CardAttribute::null;
+    CardAttribute redStack = CardAttribute::null;
+    CardAttribute greenStack = CardAttribute::null;
+    GameSystem(PlayerCount pNumber); // TMP TO BE DELETED
+    void startGame(PlayerCount pNumber); // for Player + AIs game
+    void startGame(PlayerCount pNumber, AITypes ai); // for AIs only game
+    int startGame(PlayerCount pNumber, AITypes ai, std::default_random_engine& rng); // for instant AIs only seeded game with returning score
+    void setupCards(std::default_random_engine& rng);
     void gameLoop();
-    void setupCards();
-    void addLog(); // ajouter sa à "GameClass"
+    bool isPlayable(Card card);
+    void playCard(int cardIndex);
+    void discardCard(int cardIndex);
+    void giveHint(CardAttribute hint, Player player);
+    void drawCard();
+    void nextTurn();
+    void addLog(); // ajouter sa à "GameScene"
 };
 

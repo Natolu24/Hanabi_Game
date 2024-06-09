@@ -63,6 +63,9 @@ class SettingScene
 
 
 public:
+    static PlayerCount playerGameCount;
+    static PlayerCount aiGameCount;
+    static AITypes aiGameType;
     
     SettingScene(sf::RenderWindow& window, sf::Font& font);
     void draw(Scenes* mState);
@@ -71,7 +74,6 @@ public:
 
 class GameScene
 {
-    GameSystem mGame;
     bool showFrontCard = true;
     sf::RenderWindow& mWindow;
     sf::Font& mFont;
@@ -169,6 +171,7 @@ class GameScene
     sf::Vector2f discardOutlinePosition{860.0f, 180.0f};
     sf::Vector2f discardOutlineSize{330.0f, 485.0f};
 public:
+    GameSystem game;
     GameScene(sf::RenderWindow& window, sf::Font& font);
     void setup();
     void draw();

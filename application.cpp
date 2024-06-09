@@ -37,6 +37,7 @@ void Application::run()
                     break;
                 case Scenes::GAME:
                     mGame.handleEvent(event);
+                    mGame.game.gameLoop();
                     break;
                 case Scenes::AITESTING:
                     mAITesting.handleEvent(event);
