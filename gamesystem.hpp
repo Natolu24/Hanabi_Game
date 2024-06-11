@@ -20,6 +20,7 @@ class Card
 public:
     CardAttribute number;
     CardAttribute color;
+    std::array<CardAttribute, 2> directAttributeHints = {CardAttribute::null, CardAttribute::null};
     std::array<CardAttribute, 10> indirectAttributeHints = {CardAttribute::One, CardAttribute::Two, CardAttribute::Three, CardAttribute::Four, CardAttribute::Five,
                                                             CardAttribute::White, CardAttribute::Blue, CardAttribute::Yellow, CardAttribute::Red, CardAttribute::Green };
     Card(CardAttribute number, CardAttribute color);
@@ -30,7 +31,7 @@ class GameSystem
 {
 public:
     PlayerCount playersNumber;
-    AITypes aiType = AITypes::null;
+    AITypes aiType = AITypes::Certainty;
     int wichPlayerTurn, score, hintTokens, errorTokens, endCountdown = -1;
     bool gameEnd, isInstantAIGame = false;
     std::chrono::time_point<std::chrono::high_resolution_clock> time, timer;

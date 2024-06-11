@@ -11,7 +11,10 @@ void Card::addHint(CardAttribute hint, bool isDirectHint)
             for (int i = 1; i < 6; i++)
             {
                 if (i == int(hint))
+                {
+                    directAttributeHints[0] = hint;
                     continue;
+                }
                 indirectAttributeHints[i] = CardAttribute::null;
             }
         }
@@ -20,7 +23,10 @@ void Card::addHint(CardAttribute hint, bool isDirectHint)
             for (int i = 6; i < 11; i++)
             {
                 if (i == int(hint))
+                {
+                    directAttributeHints[1] = hint;
                     continue;
+                }
                 indirectAttributeHints[i] = CardAttribute::null;
             }
         }
@@ -187,7 +193,23 @@ void GameSystem::gameLoop()
     }
     if (time > timer)
     {
-        // ai gen move
+        switch(aiType)
+        {
+            case AITypes::Certainty:
+                Certainty::genMove(*this);
+                break;
+            case AITypes::Omniscient:
+                Omniscient::genMove(*this);
+                break;
+            case AITypes::RuleBased:
+                RuleBased::genMove(*this);
+                break;
+            case AITypes::HatPrinciple:
+                HatPrinciple::genMove(*this);
+                break;
+            case AITypes::null:
+                break;
+        }
         timer = time + std::chrono::milliseconds(delay); // TODO : also setup timer chen player has played, to make next AI not instant play
     }
 
