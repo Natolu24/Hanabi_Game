@@ -50,6 +50,13 @@ void GameSystem::startGame(PlayerCount pNumber)
     std::random_device rd = std::random_device {};
     std::default_random_engine rng = std::default_random_engine { rd() };
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
+    drawPile.clear(), discardPile.clear();
+    p0.clear(), p1.clear(), p2.clear(), p3.clear(), p4.clear();
+    whiteStack = CardAttribute::null;
+    blueStack = CardAttribute::null;
+    yellowStack = CardAttribute::null;
+    redStack = CardAttribute::null;
+    greenStack = CardAttribute::null;
     //wichPlayerTurn = randomStartPlayer(rng);
     turn = 1;
     wichPlayerTurn = 1;
@@ -71,12 +78,22 @@ void GameSystem::startGame(PlayerCount pNumber, AITypes ai)
     std::random_device rd = std::random_device {};
     std::default_random_engine rng = std::default_random_engine { rd() };
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
+    drawPile.clear(), discardPile.clear();
+    p0.clear(), p1.clear(), p2.clear(), p3.clear(), p4.clear();
+    whiteStack = CardAttribute::null;
+    blueStack = CardAttribute::null;
+    yellowStack = CardAttribute::null;
+    redStack = CardAttribute::null;
+    greenStack = CardAttribute::null;
     wichPlayerTurn = randomStartPlayer(rng);
+    turn = 1;
     score = 0;
     hintTokens = 8;
     errorTokens = 0;
+    endCountdown = -1;
     setupCards(rng);
     gameEnd = false;
+    isInstantAIGame = false;
     time = std::chrono::high_resolution_clock::now();
     timer = time + std::chrono::milliseconds(delay);
 }
@@ -87,13 +104,21 @@ int GameSystem::startGame(PlayerCount pNumber, AITypes ai, std::default_random_e
     isInstantAIGame = true;
     playersNumber = pNumber;
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
+    drawPile.clear(), discardPile.clear();
+    p0.clear(), p1.clear(), p2.clear(), p3.clear(), p4.clear();
+    whiteStack = CardAttribute::null;
+    blueStack = CardAttribute::null;
+    yellowStack = CardAttribute::null;
+    redStack = CardAttribute::null;
+    greenStack = CardAttribute::null;
     wichPlayerTurn = randomStartPlayer(rng);
+    turn = 1;
     score = 0;
     hintTokens = 8;
     errorTokens = 0;
+    endCountdown = -1;
     setupCards(rng);
     gameEnd = false;
-
     return score;
 }
 
@@ -547,4 +572,42 @@ std::vector<Card>& GameSystem::getPlayerCards(int player)
             return p0;
             break;
     }
+}
+
+CardAttribute GameSystem::getStackByIndex(int index)
+{
+    switch(index)
+    {
+        case 0:
+            return whiteStack;
+            break;
+        case 1:
+            return blueStack;
+            break;
+        case 2:
+            return yellowStack;
+            break;
+        case 3:
+            return redStack;
+            break;
+        case 4:
+            return greenStack;
+            break;
+        default:
+            return CardAttribute::null;
+            break;
+    }
+}
+
+int GameSystem::getCopyNmbOfCardInDiscard(CardAttribute number, CardAttribute color)
+{
+    int nmb = 0;
+    for (int i = 0; i < int(discardPile.size()); i++)
+    {
+        if (discardPile[i].number == number &&discardPile[i].color == color)
+        {
+            nmb++;
+        }
+    }
+    return nmb;
 }

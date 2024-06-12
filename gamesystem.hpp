@@ -38,16 +38,8 @@ public:
     int delay = 1000;
     std::vector<Card> drawPile, discardPile;
     std::vector<std::string> logList; // ajouter sa à "GameScene"
-    std::vector<Card> p0;
-    std::vector<Card> p1;
-    std::vector<Card> p2;
-    std::vector<Card> p3;
-    std::vector<Card> p4;
-    CardAttribute whiteStack = CardAttribute::null;
-    CardAttribute blueStack = CardAttribute::null;
-    CardAttribute yellowStack = CardAttribute::null;
-    CardAttribute redStack = CardAttribute::null;
-    CardAttribute greenStack = CardAttribute::null;
+    std::vector<Card> p0, p1, p2, p3, p4;
+    CardAttribute whiteStack, blueStack, yellowStack, redStack, greenStack;
     GameSystem(PlayerCount pNumber); // TMP TO BE DELETED
     void startGame(PlayerCount pNumber); // for Player + AIs game
     void startGame(PlayerCount pNumber, AITypes ai); // for AIs only game
@@ -62,5 +54,7 @@ public:
     void nextTurn();
     void addLog(); // ajouter sa à "GameScene"
     std::vector<Card>& getPlayerCards(int player);
+    CardAttribute getStackByIndex(int index);
+    int getCopyNmbOfCardInDiscard(CardAttribute number, CardAttribute color);
 };
 

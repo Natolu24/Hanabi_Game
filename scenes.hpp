@@ -86,8 +86,8 @@ class GameScene
     sf::Vector2f returnPosition{10.0f, 10.0f};
     // LOG OUTLINE
     sf::RectangleShape logOutline;
-    sf::Vector2f logOutlinePosition{10.0f, 180.0f};
-    sf::Vector2f logOutlineSize{350.0f, 485.0f};
+    sf::Vector2f logOutlinePosition{10.0f, 190.0f};
+    sf::Vector2f logOutlineSize{350.0f, 475.0f};
     // SWITCH CARD BUTTON
     sf::RectangleShape switchButton;
     sf::Text switchText;
@@ -166,10 +166,29 @@ class GameScene
     sf::Text infosTokenRedText;
     sf::Vector2f infosTokenRedTextPosition{1130.0f, 77.5f};
     sf::Vector2f infosTokenRedTextOffset{0.0f, 0.0f};
+    // CARDS STACKS
+    sf::RectangleShape stack;
+    sf::RectangleShape stackBackground;
+    sf::Text stackText;
+    sf::Vector2f stackPosition{880.0f, 210.0f};
+    sf::Vector2f stackSize{50.0f, 50.0f};
+    sf::Vector2f stackBackgroundPosition{855.0f, 185.0f};
+    sf::Vector2f stackBackgroundSize{340.0f, 105.0f};
+    sf::Vector2f stackOffset{10.0f, 10.0f};
+    sf::Vector2f stackTextOffset{10.0f, -11.0f};
+    // DISCARDED PILE OUTLINE
+    sf::RectangleShape discardPileOutline;
+    sf::Vector2f discardPileOutlinePosition{860.0f, 335.0f};
+    sf::Vector2f discardPileOutlineSize{330.0f, 330.0f};
     // DISCARDED PILE
-    sf::RectangleShape discardOutline;
-    sf::Vector2f discardOutlinePosition{860.0f, 180.0f};
-    sf::Vector2f discardOutlineSize{330.0f, 485.0f};
+    sf::RectangleShape discard;
+    sf::Text discardText;
+    sf::Vector2f discardPosition{880.0f, 355.0f};
+    sf::Vector2f discardSize{50.0f, 50.0f};
+    sf::Vector2f discardOffset{10.0f, 10.0f};
+    sf::Vector2f discardTextOffset{0.0f, -5.0f};
+    sf::Vector2f discardSmallTextOffset{21.0f, 8.0f};
+    
 public:
     GameSystem game;
     GameScene(sf::RenderWindow& window, sf::Font& font);

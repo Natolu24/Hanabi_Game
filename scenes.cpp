@@ -388,11 +388,23 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     infosTokenRedText.setCharacterSize(40);
     infosTokenRedText.setFillColor(sf::Color::White);
 
-    discardOutline.setPosition(discardOutlinePosition);
-    discardOutline.setSize(discardOutlineSize);
-    discardOutline.setFillColor(sf::Color::Transparent);
-    discardOutline.setOutlineColor(sf::Color(124, 124, 124));
-    discardOutline.setOutlineThickness(5.0f);
+    stack.setSize(stackSize);
+    stackBackground.setPosition(stackBackgroundPosition);
+    stackBackground.setSize(stackBackgroundSize);
+    stackBackground.setFillColor(sf::Color(124, 124, 124));
+    stackText.setFont(mFont);
+    stackText.setCharacterSize(50.0f);
+    stackText.setFillColor(sf::Color::Black);
+
+    discardPileOutline.setPosition(discardPileOutlinePosition);
+    discardPileOutline.setSize(discardPileOutlineSize);
+    discardPileOutline.setFillColor(sf::Color::Transparent);
+    discardPileOutline.setOutlineColor(sf::Color(124, 124, 124));
+    discardPileOutline.setOutlineThickness(5.0f);
+
+    discard.setSize(discardSize);
+    discardText.setFont(mFont);
+    discardText.setFillColor(sf::Color::Black);
 }
 
 void GameScene::setup()
@@ -753,9 +765,91 @@ void GameScene::draw()
     mWindow.draw(infosTokenRed);
     infosTokenRedText.setString("x" + std::to_string(game.errorTokens));
     mWindow.draw(infosTokenRedText);
-    // Discard Pile
-    mWindow.draw(discardOutline);
+    // Cards Stacks
+    mWindow.draw(stackBackground);
+    for (int col = 0; col < 5; col++)
+    {
+        sf::Vector2f offsetPosition((stackSize.x + stackOffset.x) * float(col), 0.0f);
+        stack.setPosition(stackPosition + offsetPosition);
+        stackText.setPosition(stackPosition + offsetPosition + stackTextOffset);
+        stackText.setString(std::to_string(int(game.getStackByIndex(col))));
+        switch(col)
+        {
+            case 0:
+                stack.setFillColor(sf::Color::White);
+                break;
+            case 1:
+                stack.setFillColor(sf::Color::Blue);
+                break;
+            case 2:
+                stack.setFillColor(sf::Color::Yellow);
+                break;
+            case 3:
+                stack.setFillColor(sf::Color::Red);
+                break;
+            case 4:
+                stack.setFillColor(sf::Color::Green);
+                break;
+            default:
+                stack.setFillColor(sf::Color::Black);
+                break;
+        }
+        if (game.getStackByIndex(col) == CardAttribute::null)
+        {
+            stackText.setString("0");
+        }
+        mWindow.draw(stack);
+        mWindow.draw(stackText);
 
+    }
+    // Stacks and Discard Outline
+    mWindow.draw(discardPileOutline);
+    // Discard Pile
+    for (int lin = 0; lin < 5; lin++)
+    {
+        for (int col = 0; col < 5; col++)
+        {
+            sf::Vector2f offsetPosition((discardSize.x + discardOffset.x) * float(col), (discardSize.y + discardOffset.y) * float(lin));
+            int copyNmb;
+            discard.setPosition(discardPosition + offsetPosition);
+            discardText.setPosition(discardPosition + offsetPosition + discardTextOffset);
+            discardText.setString(std::to_string(col+1));
+            discardText.setCharacterSize(40);
+            switch(lin)
+            {
+                case 0:
+                    discard.setFillColor(sf::Color::White);
+                    copyNmb = game.getCopyNmbOfCardInDiscard(CardAttribute(col+1), CardAttribute::White);
+                    break;
+                case 1:
+                    discard.setFillColor(sf::Color::Blue);
+                    copyNmb = game.getCopyNmbOfCardInDiscard(CardAttribute(col+1), CardAttribute::Blue);
+                    break;
+                case 2:
+                    discard.setFillColor(sf::Color::Yellow);
+                    copyNmb = game.getCopyNmbOfCardInDiscard(CardAttribute(col+1), CardAttribute::Yellow);
+                    break;
+                case 3:
+                    discard.setFillColor(sf::Color::Red);
+                    copyNmb = game.getCopyNmbOfCardInDiscard(CardAttribute(col+1), CardAttribute::Red);
+                    break;
+                case 4:
+                    discard.setFillColor(sf::Color::Green);
+                    copyNmb = game.getCopyNmbOfCardInDiscard(CardAttribute(col+1), CardAttribute::Green);
+                    break;
+            }
+            if (copyNmb == 0)
+            {
+                discard.setFillColor(sf::Color(200, 200, 200));
+            }
+            mWindow.draw(discard);
+            mWindow.draw(discardText);
+            discardText.setPosition(discardPosition + offsetPosition + discardSmallTextOffset);
+            discardText.setString("x" + std::to_string(copyNmb));
+            discardText.setCharacterSize(25);
+            mWindow.draw(discardText);
+        }
+    }
     mWindow.display();
 }
 
