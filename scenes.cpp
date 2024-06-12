@@ -290,6 +290,10 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     logOutline.setOutlineColor(sf::Color(124, 124, 124));
     logOutline.setOutlineThickness(5.0f);
 
+    logText.setFont(mFont);
+    logText.setCharacterSize(logTextSize);
+    logText.setFillColor(sf::Color::White);
+
     switchButton.setPosition(switchPosition);
     switchButton.setSize(switchSize);
     switchButton.setFillColor(sf::Color::White);
@@ -431,8 +435,16 @@ void GameScene::draw()
     mWindow.clear(sf::Color::Black);
     // Return Button
     mWindow.draw(returnButton);
-    // Log
+    // Log Outline
     mWindow.draw(logOutline);
+    // Logs
+    for (int i = 0; i < int(game.logList.size()); i++)
+    {
+        sf::Vector2f offsetPosition(0.0f, (float(logTextSize) + logOffset.y) * float(i));
+        logText.setPosition(logPosition + offsetPosition);
+        logText.setString(game.logList[i]);
+        mWindow.draw(logText);
+    }
     // Switch Cards Button
     if (switchButton.getGlobalBounds().contains(mousePos))
     {

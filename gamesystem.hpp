@@ -37,7 +37,7 @@ public:
     std::chrono::time_point<std::chrono::high_resolution_clock> time, timer;
     int delay = 1000;
     std::vector<Card> drawPile, discardPile;
-    std::vector<std::string> logList; // ajouter sa à "GameScene"
+    std::vector<std::string> logList;
     std::vector<Card> p0, p1, p2, p3, p4;
     CardAttribute whiteStack, blueStack, yellowStack, redStack, greenStack;
     GameSystem(PlayerCount pNumber); // TMP TO BE DELETED
@@ -52,7 +52,10 @@ public:
     void giveHint(CardAttribute hint, Player player);
     void drawCard();
     void nextTurn();
-    void addLog(); // ajouter sa à "GameScene"
+    std::string cardToString(Card card);
+    std::string playerToString(int player);
+    void addLog(bool play, int index);
+    void addLog(int player, CardAttribute hint);
     std::vector<Card>& getPlayerCards(int player);
     CardAttribute getStackByIndex(int index);
     int getCopyNmbOfCardInDiscard(CardAttribute number, CardAttribute color);

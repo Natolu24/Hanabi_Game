@@ -50,7 +50,7 @@ void GameSystem::startGame(PlayerCount pNumber)
     std::random_device rd = std::random_device {};
     std::default_random_engine rng = std::default_random_engine { rd() };
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
-    drawPile.clear(), discardPile.clear();
+    drawPile.clear(), discardPile.clear(), logList.clear();
     p0.clear(), p1.clear(), p2.clear(), p3.clear(), p4.clear();
     whiteStack = CardAttribute::null;
     blueStack = CardAttribute::null;
@@ -78,7 +78,7 @@ void GameSystem::startGame(PlayerCount pNumber, AITypes ai)
     std::random_device rd = std::random_device {};
     std::default_random_engine rng = std::default_random_engine { rd() };
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
-    drawPile.clear(), discardPile.clear();
+    drawPile.clear(), discardPile.clear(), logList.clear();
     p0.clear(), p1.clear(), p2.clear(), p3.clear(), p4.clear();
     whiteStack = CardAttribute::null;
     blueStack = CardAttribute::null;
@@ -104,7 +104,7 @@ int GameSystem::startGame(PlayerCount pNumber, AITypes ai, std::default_random_e
     isInstantAIGame = true;
     playersNumber = pNumber;
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
-    drawPile.clear(), discardPile.clear();
+    drawPile.clear(), discardPile.clear(), logList.clear();
     p0.clear(), p1.clear(), p2.clear(), p3.clear(), p4.clear();
     whiteStack = CardAttribute::null;
     blueStack = CardAttribute::null;
@@ -313,6 +313,7 @@ bool GameSystem::isPlayable(Card card)
 void GameSystem::playCard(int cardIndex)
 {
     // current player play a card, might go to a color stack, or go to the discard pile while gaining a errorToken
+    addLog(true, cardIndex);
     switch(Player(wichPlayerTurn))
     {
         case Player::P0:
@@ -369,6 +370,7 @@ void GameSystem::playCard(int cardIndex)
 void GameSystem::discardCard(int cardIndex)
 {
     // current player discard one of his card, gain a hintToken
+    addLog(false, cardIndex);
     switch(Player(wichPlayerTurn))
     {
         case Player::P0:
@@ -406,6 +408,7 @@ void GameSystem::discardCard(int cardIndex)
 void GameSystem::giveHint(CardAttribute hint, Player player)
 {
     // a player receive direct hint / indirect hint to all of his cards, at the price of a hintToken
+    addLog(int(player), hint);
     switch(player)
     {
         case Player::P0:
@@ -546,6 +549,116 @@ void GameSystem::nextTurn()
     if (endCountdown == 0)
     {
         gameEnd = true;
+    }
+}
+
+std::string GameSystem::cardToString(Card card)
+{
+    std::string str;
+    switch(card.color)
+    {
+        case CardAttribute::White:
+            str += "[White ";
+            break;
+        case CardAttribute::Blue:
+            str += "[Blue ";
+            break;
+        case CardAttribute::Yellow:
+            str += "[Yellow ";
+            break;
+        case CardAttribute::Red:
+            str += "[Red ";
+            break;
+        case CardAttribute::Green:
+            str += "[Green ";
+            break;
+        default:
+            break;
+    }
+    switch(card.number)
+    {
+        case CardAttribute::One:
+            str += "1]";
+            break;
+        case CardAttribute::Two:
+            str += "2]";
+            break;
+        case CardAttribute::Three:
+            str += "3]";
+            break;
+        case CardAttribute::Four:
+            str += "4]";
+            break;
+        case CardAttribute::Five:
+            str += "5]";
+            break;
+        default:
+            break;
+    }
+    return str;
+}
+
+std::string GameSystem::playerToString(int player)
+{
+    switch(player)
+    {
+        case 1:
+            return std::string("Player");
+            break;
+        default:
+            return std::string("#" + std::to_string(player));
+            break;
+    }
+}
+
+void GameSystem::addLog(bool play, int index)
+{
+    if (play)
+    {
+        logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->PLAY " + cardToString(p0[index]));
+    }
+    else
+    {
+        logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->DISCARD " + cardToString(p0[index]));
+    }
+}
+
+void GameSystem::addLog(int player, CardAttribute hint)
+{
+    switch(hint)
+    {
+        case CardAttribute::One:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [1] to " + playerToString(player));
+            break;
+        case CardAttribute::Two:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [2] to " + playerToString(player));
+            break;
+        case CardAttribute::Three:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [3] to " + playerToString(player));
+            break;
+        case CardAttribute::Four:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [4] to " + playerToString(player));
+            break;
+        case CardAttribute::Five:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [5] to " + playerToString(player));
+            break;
+        case CardAttribute::White:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [White] to " + playerToString(player));
+            break;
+        case CardAttribute::Blue:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [Blue] to " + playerToString(player));
+            break;
+        case CardAttribute::Yellow:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [Yellow] to " + playerToString(player));
+            break;
+        case CardAttribute::Red:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [Red] to " + playerToString(player));
+            break;
+        case CardAttribute::Green:
+            logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->HINT [Green] to " + playerToString(player));
+            break;
+        default:
+            break;
     }
 }
 

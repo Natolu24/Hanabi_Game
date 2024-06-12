@@ -88,6 +88,11 @@ class GameScene
     sf::RectangleShape logOutline;
     sf::Vector2f logOutlinePosition{10.0f, 190.0f};
     sf::Vector2f logOutlineSize{350.0f, 475.0f};
+    // LOGS
+    sf::Text logText;
+    int logTextSize = 18;
+    sf::Vector2f logPosition{15.0f, 190.0f};
+    sf::Vector2f logOffset{0.0f, 10.0f};
     // SWITCH CARD BUTTON
     sf::RectangleShape switchButton;
     sf::Text switchText;
