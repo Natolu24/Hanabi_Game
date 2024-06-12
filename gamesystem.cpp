@@ -45,17 +45,21 @@ GameSystem::GameSystem(PlayerCount pNumber)// : certaintyAi(Certainty(*this)), o
 
 void GameSystem::startGame(PlayerCount pNumber)
 {
+    aiType = AITypes::Certainty;
     playersNumber = pNumber;
     std::random_device rd = std::random_device {};
     std::default_random_engine rng = std::default_random_engine { rd() };
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
     //wichPlayerTurn = randomStartPlayer(rng);
+    turn = 1;
     wichPlayerTurn = 1;
     score = 0;
     hintTokens = 8;
     errorTokens = 0;
+    endCountdown = -1;
     setupCards(rng);
     gameEnd = false;
+    isInstantAIGame = false;
     time = std::chrono::high_resolution_clock::now();
     timer = time + std::chrono::milliseconds(delay);
 }
@@ -483,6 +487,7 @@ void GameSystem::drawCard()
 
 void GameSystem::nextTurn()
 {
+    turn++;
     // if was turn of last player, make it go back to first player
     if (wichPlayerTurn == int(playersNumber))
     {
@@ -516,5 +521,30 @@ void GameSystem::nextTurn()
     if (endCountdown == 0)
     {
         gameEnd = true;
+    }
+}
+
+std::vector<Card>& GameSystem::getPlayerCards(int player)
+{
+    switch(Player(player))
+    {
+        case Player::P0:
+            return p0;
+            break;
+        case Player::P1:
+            return p1;
+            break;
+        case Player::P2:
+            return p2;
+            break;
+        case Player::P3:
+            return p3;
+            break;
+        case Player::P4:
+            return p4;
+            break;
+        default: // should not happen
+            return p0;
+            break;
     }
 }

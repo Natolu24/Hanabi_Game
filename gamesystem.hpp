@@ -31,9 +31,9 @@ class GameSystem
 {
 public:
     PlayerCount playersNumber;
-    AITypes aiType = AITypes::Certainty;
-    int wichPlayerTurn, score, hintTokens, errorTokens, endCountdown = -1;
-    bool gameEnd, isInstantAIGame = false;
+    AITypes aiType;
+    int turn, wichPlayerTurn, score, hintTokens, errorTokens, endCountdown;
+    bool gameEnd, isInstantAIGame;
     std::chrono::time_point<std::chrono::high_resolution_clock> time, timer;
     int delay = 1000;
     std::vector<Card> drawPile, discardPile;
@@ -61,5 +61,6 @@ public:
     void drawCard();
     void nextTurn();
     void addLog(); // ajouter sa à "GameScene"
+    std::vector<Card>& getPlayerCards(int player);
 };
 

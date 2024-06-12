@@ -365,12 +365,10 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     infosLine2.setFillColor(sf::Color(124, 124, 124));
 
     infosTurnText.setFont(mFont);
-    infosTurnText.setString("T. 99");
     infosTurnText.setPosition(infosTurnTextPosition + infosTurnTextOffset);
     infosTurnText.setCharacterSize(40);
     infosTurnText.setFillColor(sf::Color::White);
     infosScoreText.setFont(mFont);
-    infosScoreText.setString("25/25");
     infosScoreText.setPosition(infosScoreTextPosition + infosScoreTextOffset);
     infosScoreText.setCharacterSize(40);
     infosScoreText.setFillColor(sf::Color::White);
@@ -382,12 +380,10 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     infosTokenRed.setRadius(infosTokenRedRadius);
     infosTokenRed.setFillColor(sf::Color::Red);
     infosTokenBlueText.setFont(mFont);
-    infosTokenBlueText.setString("x8");
     infosTokenBlueText.setPosition(infosTokenBlueTextPosition + infosTokenBlueTextOffset);
     infosTokenBlueText.setCharacterSize(40);
     infosTokenBlueText.setFillColor(sf::Color::White);
     infosTokenRedText.setFont(mFont);
-    infosTokenRedText.setString("x3");
     infosTokenRedText.setPosition(infosTokenRedTextPosition + infosTokenRedTextOffset);
     infosTokenRedText.setCharacterSize(40);
     infosTokenRedText.setFillColor(sf::Color::White);
@@ -440,12 +436,13 @@ void GameScene::draw()
     card.setOutlineThickness(0.0f); // reset thickness in case previous modification is still active
     if (showFrontCard) // Show the card itself of the others AIs
     {
-        for (int lin = 0; lin < 4; lin++) // replace by number of players
+        for (int lin = 0; lin < int(game.playersNumber)-1; lin++)
         {
-            for (int col = 0; col < 5; col++) // replace by number of cards in hand +1
+            std::vector<Card> pCards = game.getPlayerCards(lin+2);
+            for (int col = 0; col < int(pCards.size())+1; col++)
             {
                 sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), (cardSize.y + cardOffset.y) * float(lin));
-                if (col == 4) // replace by number of cards in hand
+                if (col == int(pCards.size()))
                 {
                     aiIdText.setPosition(cardAIPosition + offsetPosition);
                     aiIdText.setString("#" + std::to_string(lin+1));
@@ -453,9 +450,47 @@ void GameScene::draw()
                     break;
                 }
                 card.setPosition(cardAIPosition + offsetPosition);
-                card.setFillColor(sf::Color::White); // replace by "switch" to cardattribute
+                switch(pCards[col].color)
+                {
+                    case CardAttribute::White:
+                        card.setFillColor(sf::Color::White);
+                        break;
+                    case CardAttribute::Yellow:
+                        card.setFillColor(sf::Color::Yellow);
+                        break;
+                    case CardAttribute::Blue:
+                        card.setFillColor(sf::Color::Blue);
+                        break;
+                    case CardAttribute::Red:
+                        card.setFillColor(sf::Color::Red);
+                        break;
+                    case CardAttribute::Green:
+                        card.setFillColor(sf::Color::Green);
+                        break;
+                    default:
+                        break;
+                }
                 cardText.setPosition(cardAIPosition + offsetPosition + cardTextOffset);
-                cardText.setString("5"); // replace by "switch" to cardattribute
+                switch(pCards[col].number)
+                {
+                    case CardAttribute::One:
+                        cardText.setString("1");
+                        break;
+                    case CardAttribute::Two:
+                        cardText.setString("2");
+                        break;
+                    case CardAttribute::Three:
+                        cardText.setString("3");
+                        break;
+                    case CardAttribute::Four:
+                        cardText.setString("4");
+                        break;
+                    case CardAttribute::Five:
+                        cardText.setString("5");
+                        break;
+                    default:
+                        break;
+                }
                 mWindow.draw(card);
                 mWindow.draw(cardText);
             }
@@ -472,12 +507,13 @@ void GameScene::draw()
     else // Otherwise show its "back", but mostly with the indirect hints given
     {
         card.setFillColor(sf::Color(200, 200, 200));
-        for (int lin = 0; lin < 4; lin++) // replace by number of players
+        for (int lin = 0; lin < int(game.playersNumber)-1; lin++)
         {
-            for (int col = 0; col < 5; col++) // replace by number of cards in hand +1
+            std::vector<Card> pCards = game.getPlayerCards(lin+2);
+            for (int col = 0; col < int(pCards.size())+1; col++)
             {
                 sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), (cardSize.y + cardOffset.y) * float(lin));
-                if (col == 4) // replace by number of cards in hand
+                if (col == int(pCards.size()))
                 {
                     aiIdText.setPosition(cardAIPosition + offsetPosition);
                     aiIdText.setString("#" + std::to_string(lin+1));
@@ -489,40 +525,39 @@ void GameScene::draw()
                 for (int i = 0; i < 5; i++) // Color Indirect Hints
                 {
                     sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y);
-                    if (col < 2) // replace by checking with the indirect hints of the card
+                    miniHint.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                    switch(pCards[col].indirectAttributeHints[i+5])
                     {
-                        miniHint.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
-                        switch(i)
-                        {
-                            case 0:
-                                miniHint.setFillColor(sf::Color::White);
-                                break;
-                            case 1:
-                                miniHint.setFillColor(sf::Color::Blue);
-                                break;
-                            case 2:
-                                miniHint.setFillColor(sf::Color::Yellow);
-                                break;
-                            case 3:
-                                miniHint.setFillColor(sf::Color::Red);
-                                break;
-                            case 4:
-                                miniHint.setFillColor(sf::Color::Green);
-                                break;
-                        }
-                        mWindow.draw(miniHint);
-                    }
-                    else
-                    {
-                        miniLine.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
-                        mWindow.draw(miniLine);
-
+                        case CardAttribute::White:
+                            miniHint.setFillColor(sf::Color::White);
+                            mWindow.draw(miniHint);
+                            break;
+                        case CardAttribute::Blue:
+                            miniHint.setFillColor(sf::Color::Blue);
+                            mWindow.draw(miniHint);
+                            break;
+                        case CardAttribute::Yellow:
+                            miniHint.setFillColor(sf::Color::Yellow);
+                            mWindow.draw(miniHint);
+                            break;
+                        case CardAttribute::Red:
+                            miniHint.setFillColor(sf::Color::Red);
+                            mWindow.draw(miniHint);
+                            break;
+                        case CardAttribute::Green:
+                            miniHint.setFillColor(sf::Color::Green);
+                            mWindow.draw(miniHint);
+                            break;
+                        default:
+                            miniLine.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                            mWindow.draw(miniLine);
+                            break;
                     }
                 }
                 for (int i = 0; i < 5; i++) // Number Indirect Hints
                 {
                     sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y + miniHintSize.y + miniHintOffset.y);
-                    if (col < 2) // replace by checking with the indirect hints of the card
+                    if (pCards[col].indirectAttributeHints[i] != CardAttribute::null)
                     {
                         miniText.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition + miniHintTextOffset);
                         miniText.setString(std::to_string(i+1));
@@ -548,7 +583,7 @@ void GameScene::draw()
     }
     card.setFillColor(sf::Color(200, 200, 200)); // back side for player (light gray)
     // "Player" Cards
-    for (int col = 0; col < 5; col++) // replace by number of cards in hand
+    for (int col = 0; col < int(game.p0.size()); col++)
     {
         sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), 0.0f);
         card.setPosition(cardPlayerPosition + offsetPosition);
@@ -564,40 +599,39 @@ void GameScene::draw()
         for (int i = 0; i < 5; i++) // Color Indirect Hints
         {
             sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y);
-            if (col < 2) // replace by checking with the indirect hints of the card
+            miniHint.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
+            switch(game.p0[col].indirectAttributeHints[i+5])
             {
-                miniHint.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
-                switch(i)
-                {
-                    case 0:
-                        miniHint.setFillColor(sf::Color::White);
-                        break;
-                    case 1:
-                        miniHint.setFillColor(sf::Color::Blue);
-                        break;
-                    case 2:
-                        miniHint.setFillColor(sf::Color::Yellow);
-                        break;
-                    case 3:
-                        miniHint.setFillColor(sf::Color::Red);
-                        break;
-                    case 4:
-                        miniHint.setFillColor(sf::Color::Green);
-                        break;
-                }
-                mWindow.draw(miniHint);
-            }
-            else
-            {
-                miniLine.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
-                mWindow.draw(miniLine);
-
+                case CardAttribute::White:
+                    miniHint.setFillColor(sf::Color::White);
+                    mWindow.draw(miniHint);
+                    break;
+                case CardAttribute::Blue:
+                    miniHint.setFillColor(sf::Color::Blue);
+                    mWindow.draw(miniHint);
+                    break;
+                case CardAttribute::Yellow:
+                    miniHint.setFillColor(sf::Color::Yellow);
+                    mWindow.draw(miniHint);
+                    break;
+                case CardAttribute::Red:
+                    miniHint.setFillColor(sf::Color::Red);
+                    mWindow.draw(miniHint);
+                    break;
+                case CardAttribute::Green:
+                    miniHint.setFillColor(sf::Color::Green);
+                    mWindow.draw(miniHint);
+                    break;
+                default:
+                    miniLine.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                    mWindow.draw(miniLine);
+                    break;
             }
         }
         for (int i = 0; i < 5; i++) // Number Indirect Hints
         {
             sf::Vector2f miniOffsetPosition(offsetPosition.x + (miniHintSize.x + miniHintOffset.x) * float(i), offsetPosition.y + miniHintSize.y + miniHintOffset.y);
-            if (col < 2) // replace by checking with the indirect hints of the card
+            if (game.p0[col].indirectAttributeHints[i] != CardAttribute::null)
             {
                 miniText.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition + miniHintTextOffset);
                 miniText.setString(std::to_string(i+1));
@@ -701,12 +735,23 @@ void GameScene::draw()
     mWindow.draw(infosLine1);
     mWindow.draw(infosLine2);
     // Infos Turn and Score
+    infosTurnText.setString("T. " + std::to_string(game.turn));
     mWindow.draw(infosTurnText);
+    if (game.score <= 9)
+    {
+        infosScoreText.setString(" " + std::to_string(game.score) + "/25"); // TODO : MAXSCORE THINGY
+    }
+    else
+    {
+        infosScoreText.setString(std::to_string(game.score) + "/25");
+    }
     mWindow.draw(infosScoreText);
     // Infos Tokens
     mWindow.draw(infosTokenBlue);
+    infosTokenBlueText.setString("x" + std::to_string(game.hintTokens));
     mWindow.draw(infosTokenBlueText);
     mWindow.draw(infosTokenRed);
+    infosTokenRedText.setString("x" + std::to_string(game.errorTokens));
     mWindow.draw(infosTokenRedText);
     // Discard Pile
     mWindow.draw(discardOutline);
