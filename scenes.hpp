@@ -75,6 +75,10 @@ public:
 class GameScene
 {
     bool showFrontCard = true;
+    int logStart = 0;
+    int whichPlayerClicked = -1;
+    int whichHintClicked = -1;
+    int whichCardClicked = -1;
     sf::RenderWindow& mWindow;
     sf::Font& mFont;
     // UI Textures
@@ -99,6 +103,15 @@ class GameScene
     sf::Vector2f switchPosition{240.0f, 10.0f};
     sf::Vector2f switchSize{130.0f, 60.0f};
     sf::Vector2f switchTextOffset{11.0f, 7.0f};
+    // DRAW PILE
+    sf::RectangleShape drawPile;
+    sf::RectangleShape drawPileBackground;
+    sf::Text drawPileText;
+    sf::Vector2f drawPilePosition{220.0f, 100.0f};
+    sf::Vector2f drawPileBackgroundPosition{210.0f, 90.0f};
+    sf::Vector2f drawPileTextPosition{290.0f, 100.0f};
+    sf::Vector2f drawPileSize{60.0f, 60.0f};
+    sf::Vector2f drawPileBackgroundSize{160.0f, 80.0f};
     // CARDS
     sf::RectangleShape card;
     sf::RectangleShape cardsOutlineCollider;
@@ -199,7 +212,7 @@ public:
     GameScene(sf::RenderWindow& window, sf::Font& font);
     void setup();
     void draw();
-    void handleEvent(sf::Event);
+    void handleEvent(sf::Event, Scenes& scene);
 };
 
 class AITestingScene

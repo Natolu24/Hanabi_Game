@@ -46,6 +46,7 @@ public:
     int startGame(PlayerCount pNumber, AITypes ai, std::default_random_engine& rng); // for instant AIs only seeded game with returning score
     void setupCards(std::default_random_engine& rng);
     void gameLoop();
+    void resetAIDelay();
     bool isPlayable(Card card);
     void playCard(int cardIndex);
     void discardCard(int cardIndex);

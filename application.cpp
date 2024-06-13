@@ -36,8 +36,7 @@ void Application::run()
                     mSetting.handleEvent(event);
                     break;
                 case Scenes::GAME:
-                    mGame.handleEvent(event);
-                    mGame.game.gameLoop();
+                    mGame.handleEvent(event, mState);
                     break;
                 case Scenes::AITESTING:
                     mAITesting.handleEvent(event);
@@ -55,6 +54,7 @@ void Application::run()
                 break;
             case Scenes::GAME:
                 mGame.draw();
+                mGame.game.gameLoop();
                 break;
             case Scenes::AITESTING:
                 mAITesting.draw();

@@ -15,7 +15,7 @@ void Card::addHint(CardAttribute hint, bool isDirectHint)
                     directAttributeHints[0] = hint;
                     continue;
                 }
-                indirectAttributeHints[i] = CardAttribute::null;
+                indirectAttributeHints[i-1] = CardAttribute::null;
             }
         }
         else // if color hint
@@ -27,7 +27,7 @@ void Card::addHint(CardAttribute hint, bool isDirectHint)
                     directAttributeHints[1] = hint;
                     continue;
                 }
-                indirectAttributeHints[i] = CardAttribute::null;
+                indirectAttributeHints[i-1] = CardAttribute::null;
             }
         }
     }
@@ -220,6 +220,7 @@ void GameSystem::gameLoop()
     {
         return;
     }
+    time = std::chrono::high_resolution_clock::now();
     if (time > timer)
     {
         switch(aiType)
@@ -239,9 +240,14 @@ void GameSystem::gameLoop()
             case AITypes::null:
                 break;
         }
-        timer = time + std::chrono::milliseconds(delay); // TODO : also setup timer chen player has played, to make next AI not instant play
+        timer = time + std::chrono::milliseconds(delay);
     }
+}
 
+void GameSystem::resetAIDelay()
+{
+    time = std::chrono::high_resolution_clock::now();
+    timer = time + std::chrono::milliseconds(delay);
 }
 
 bool GameSystem::isPlayable(Card card)
@@ -322,6 +328,10 @@ void GameSystem::playCard(int cardIndex)
                 errorTokens++;
                 discardPile.push_back(p0[cardIndex]);
             }
+            else
+            {
+                score++;
+            }
             p0.erase(p0.begin()+cardIndex);
             drawCard();
             break;
@@ -330,6 +340,10 @@ void GameSystem::playCard(int cardIndex)
             {
                 errorTokens++;
                 discardPile.push_back(p1[cardIndex]);
+            }
+            else
+            {
+                score++;
             }
             p1.erase(p1.begin()+cardIndex);
             drawCard();
@@ -340,6 +354,10 @@ void GameSystem::playCard(int cardIndex)
                 errorTokens++;
                 discardPile.push_back(p2[cardIndex]);
             }
+            else
+            {
+                score++;
+            }
             p2.erase(p2.begin()+cardIndex);
             drawCard();
             break;
@@ -349,6 +367,10 @@ void GameSystem::playCard(int cardIndex)
                 errorTokens++;
                 discardPile.push_back(p3[cardIndex]);
             }
+            else
+            {
+                score++;
+            }
             p3.erase(p3.begin()+cardIndex);
             drawCard();
             break;
@@ -357,6 +379,10 @@ void GameSystem::playCard(int cardIndex)
             {
                 errorTokens++;
                 discardPile.push_back(p4[cardIndex]);
+            }
+            else
+            {
+                score++;
             }
             p4.erase(p4.begin()+cardIndex);
             drawCard();
@@ -486,30 +512,33 @@ void GameSystem::giveHint(CardAttribute hint, Player player)
 void GameSystem::drawCard()
 {
     // current player draw card
-    switch(Player(wichPlayerTurn))
+    if (!drawPile.empty())
     {
-        case Player::P0:
-            p0.push_back(drawPile.back());
-            drawPile.pop_back();
-            break;
-        case Player::P1:
-            p1.push_back(drawPile.back());
-            drawPile.pop_back();
-            break;
-        case Player::P2:
-            p2.push_back(drawPile.back());
-            drawPile.pop_back();
-            break;
-        case Player::P3:
-            p3.push_back(drawPile.back());
-            drawPile.pop_back();
-            break;
-        case Player::P4:
-            p4.push_back(drawPile.back());
-            drawPile.pop_back();
-            break;
-        case Player::null:
-            break;
+        switch(Player(wichPlayerTurn))
+        {
+            case Player::P0:
+                p0.push_back(drawPile.back());
+                drawPile.pop_back();
+                break;
+            case Player::P1:
+                p1.push_back(drawPile.back());
+                drawPile.pop_back();
+                break;
+            case Player::P2:
+                p2.push_back(drawPile.back());
+                drawPile.pop_back();
+                break;
+            case Player::P3:
+                p3.push_back(drawPile.back());
+                drawPile.pop_back();
+                break;
+            case Player::P4:
+                p4.push_back(drawPile.back());
+                drawPile.pop_back();
+                break;
+            case Player::null:
+                break;
+        }
     }
 }
 
@@ -536,14 +565,14 @@ void GameSystem::nextTurn()
     {
         gameEnd = true;
     }
-    // if draw pile empty, start countdown
-    if (drawPile.size() == 0 && endCountdown == -1) {
-        endCountdown = int(playersNumber);
-    }
     // decrement countdown
     if (endCountdown >= 0)
     {
         endCountdown--;
+    }
+    // if draw pile empty, start countdown
+    if (drawPile.size() == 0 && endCountdown == -1) {
+        endCountdown = int(playersNumber);
     }
     // if countdown reached 0, then end
     if (endCountdown == 0)
@@ -606,20 +635,21 @@ std::string GameSystem::playerToString(int player)
             return std::string("Player");
             break;
         default:
-            return std::string("#" + std::to_string(player));
+            return std::string("#" + std::to_string(player-1));
             break;
     }
 }
 
 void GameSystem::addLog(bool play, int index)
 {
+    std::vector<Card> pCards = getCurrentPlayerCards(*this);
     if (play)
     {
-        logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->PLAY " + cardToString(p0[index]));
+        logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->PLAY " + cardToString(pCards[index]));
     }
     else
     {
-        logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->DISCARD " + cardToString(p0[index]));
+        logList.push_back(std::to_string(turn) + "| " + playerToString(wichPlayerTurn) + "->DISCARD " + cardToString(pCards[index]));
     }
 }
 

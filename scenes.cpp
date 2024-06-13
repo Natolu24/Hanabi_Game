@@ -303,6 +303,17 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     switchText.setCharacterSize(30);
     switchText.setFillColor(sf::Color::Black);
 
+    drawPile.setPosition(drawPilePosition);
+    drawPile.setSize(drawPileSize);
+    drawPile.setFillColor(sf::Color(200, 200, 200));
+    drawPileBackground.setPosition(drawPileBackgroundPosition);
+    drawPileBackground.setSize(drawPileBackgroundSize);
+    drawPileBackground.setFillColor(sf::Color(124, 124, 124));
+    drawPileText.setFont(mFont);
+    drawPileText.setPosition(drawPileTextPosition);
+    drawPileText.setCharacterSize(40);
+    drawPileText.setFillColor(sf::Color::Black);
+
     miniHint.setSize(miniHintSize);
     miniLine.setSize(miniLineSize);
     miniLine.setFillColor(sf::Color::Black);
@@ -395,7 +406,7 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     stack.setSize(stackSize);
     stackBackground.setPosition(stackBackgroundPosition);
     stackBackground.setSize(stackBackgroundSize);
-    stackBackground.setFillColor(sf::Color(124, 124, 124));
+    stackBackground.setFillColor(sf::Color(200, 200, 200));
     stackText.setFont(mFont);
     stackText.setCharacterSize(50.0f);
     stackText.setFillColor(sf::Color::Black);
@@ -438,9 +449,13 @@ void GameScene::draw()
     // Log Outline
     mWindow.draw(logOutline);
     // Logs
-    for (int i = 0; i < int(game.logList.size()); i++)
+    for (int i = logStart; i < int(game.logList.size()); i++)
     {
-        sf::Vector2f offsetPosition(0.0f, (float(logTextSize) + logOffset.y) * float(i));
+        if (i == logStart+17)
+        {
+            break;
+        }
+        sf::Vector2f offsetPosition(0.0f, (float(logTextSize) + logOffset.y) * float(i - logStart));
         logText.setPosition(logPosition + offsetPosition);
         logText.setString(game.logList[i]);
         mWindow.draw(logText);
@@ -456,6 +471,11 @@ void GameScene::draw()
     }
     mWindow.draw(switchButton);
     mWindow.draw(switchText);
+    // Draw Pile
+    mWindow.draw(drawPileBackground);
+    mWindow.draw(drawPile);
+    drawPileText.setString("x" + std::to_string(int(game.drawPile.size())));
+    mWindow.draw(drawPileText);
     // AIs Cards
     card.setOutlineThickness(0.0f); // reset thickness in case previous modification is still active
     if (showFrontCard) // Show the card itself of the others AIs
@@ -519,10 +539,10 @@ void GameScene::draw()
                 mWindow.draw(cardText);
             }
             sf::Vector2f colliderPosition(0.0f, (cardSize.y + cardOffset.y) * float(lin));
-            sf::Vector2f colliderSize((cardSize.x + cardOffset.x) * 4 + cardSize.x, cardSize.y);
+            sf::Vector2f colliderSize((cardSize.x + cardOffset.x) * int(pCards.size()) + cardSize.x, cardSize.y);
             cardsOutlineCollider.setPosition(cardAIPosition + colliderPosition);
             cardsOutlineCollider.setSize(colliderSize);
-            if (cardsOutlineCollider.getGlobalBounds().contains(mousePos))
+            if (cardsOutlineCollider.getGlobalBounds().contains(mousePos) || whichPlayerClicked == lin)
             {
                 mWindow.draw(cardsOutlineCollider);
             }
@@ -611,7 +631,7 @@ void GameScene::draw()
     {
         sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), 0.0f);
         card.setPosition(cardPlayerPosition + offsetPosition);
-        if (card.getGlobalBounds().contains(mousePos))
+        if (card.getGlobalBounds().contains(mousePos) || whichCardClicked == col)
         {
             card.setOutlineThickness(5.0f);
         }
@@ -647,7 +667,7 @@ void GameScene::draw()
                     mWindow.draw(miniHint);
                     break;
                 default:
-                    miniLine.setPosition(cardAIPosition + miniHintPosition + miniOffsetPosition);
+                    miniLine.setPosition(cardPlayerPosition + miniHintPosition + miniOffsetPosition);
                     mWindow.draw(miniLine);
                     break;
             }
@@ -692,7 +712,7 @@ void GameScene::draw()
                 hintButton.setFillColor(sf::Color::Green);
                 break;
         }
-        if (hintButton.getGlobalBounds().contains(mousePos))
+        if (hintButton.getGlobalBounds().contains(mousePos) || whichHintClicked == col+5)
         {
             hintButton.setOutlineThickness(5.0f);
         }
@@ -710,7 +730,7 @@ void GameScene::draw()
         hintButton.setPosition(hintPosition + offsetPosition);
         hintText.setPosition(hintPosition + offsetPosition + hintTextOffset);
         hintText.setString(std::to_string(col+1));
-        if (hintButton.getGlobalBounds().contains(mousePos))
+        if (hintButton.getGlobalBounds().contains(mousePos) || whichHintClicked == col)
         {
             hintButton.setOutlineThickness(5.0f);
         }
@@ -763,7 +783,7 @@ void GameScene::draw()
     mWindow.draw(infosTurnText);
     if (game.score <= 9)
     {
-        infosScoreText.setString(" " + std::to_string(game.score) + "/25"); // TODO : MAXSCORE THINGY
+        infosScoreText.setString(" " + std::to_string(game.score) + "/25");
     }
     else
     {
@@ -865,17 +885,137 @@ void GameScene::draw()
     mWindow.display();
 }
 
-void GameScene::handleEvent(sf::Event event)
+void GameScene::handleEvent(sf::Event event, Scenes& scene)
 {
-    if (event.type == sf::Event::MouseButtonPressed)
+    if (event.type == sf::Event::MouseButtonReleased)
     {
         sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
         sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
         if (event.mouseButton.button == sf::Mouse::Left)
         {
+            if (returnButton.getGlobalBounds().contains(mousePos))
+            {
+                scene = Scenes::SETTING;
+            }
             if (switchButton.getGlobalBounds().contains(mousePos))
             {
                 showFrontCard = !showFrontCard;
+            }
+            for (int lin = 0; lin < int(game.playersNumber)-1; lin++)
+            {
+                std::vector<Card> pCards = game.getPlayerCards(lin+2);
+                sf::Vector2f colliderPosition(0.0f, (cardSize.y + cardOffset.y) * float(lin));
+                sf::Vector2f colliderSize((cardSize.x + cardOffset.x) * int(pCards.size()) + cardSize.x, cardSize.y);
+                cardsOutlineCollider.setPosition(cardAIPosition + colliderPosition);
+                cardsOutlineCollider.setSize(colliderSize);
+                if (cardsOutlineCollider.getGlobalBounds().contains(mousePos))
+                {
+                    if (whichPlayerClicked != lin)
+                    {
+                        whichPlayerClicked = lin;
+                    }
+                    else
+                    {
+                        whichPlayerClicked = -1;
+                    }
+                }
+            }
+            for (int col = 0; col < int(game.p0.size()); col++)
+            {
+                sf::Vector2f offsetPosition((cardSize.x + cardOffset.x) * float(col), 0.0f);
+                card.setPosition(cardPlayerPosition + offsetPosition);
+                if (card.getGlobalBounds().contains(mousePos))
+                {
+                    if (whichCardClicked != col)
+                    {
+                        whichCardClicked = col;
+                    }
+                    else
+                    {
+                        whichCardClicked = -1;
+                    }
+                }
+            }
+            for (int col = 0; col < 5; col++)
+            {
+                sf::Vector2f offsetPosition((hintSize.x + cardOffset.x) * float(col), 0.0f);
+                hintButton.setPosition(hintPosition + offsetPosition);
+                if (hintButton.getGlobalBounds().contains(mousePos))
+                {
+                    if (whichHintClicked != col+5)
+                    {
+                        whichHintClicked = col+5;
+                    }
+                    else
+                    {
+                        whichHintClicked = -1;
+                    }
+                }
+            }
+            for (int col = 0; col < 5; col++)
+            {
+                sf::Vector2f offsetPosition((hintSize.x + cardOffset.x) * float(col), hintSize.y + 10.0f);
+                hintButton.setPosition(hintPosition + offsetPosition);
+                if (hintButton.getGlobalBounds().contains(mousePos))
+                {
+                    if (whichHintClicked != col)
+                    {
+                        whichHintClicked = col;
+                    }
+                    else
+                    {
+                        whichHintClicked = -1;
+                    }
+                }
+            }
+            if (gameplayPlayButton.getGlobalBounds().contains(mousePos))
+            {
+                if ((whichCardClicked != -1) && (game.wichPlayerTurn == 1) && (!game.gameEnd))
+                {
+                    game.resetAIDelay();
+                    game.playCard(whichCardClicked);
+                    whichPlayerClicked = -1;
+                    whichHintClicked = -1;
+                    whichCardClicked = -1;
+                }
+            }
+            if (gameplayDiscardButton.getGlobalBounds().contains(mousePos))
+            {
+                if ((whichCardClicked != -1) && (game.wichPlayerTurn == 1) && (!game.gameEnd))
+                {
+                    game.resetAIDelay();
+                    game.discardCard(whichCardClicked);
+                    whichPlayerClicked = -1;
+                    whichHintClicked = -1;
+                    whichCardClicked = -1;
+                }
+            }
+            if (gameplayHintButton.getGlobalBounds().contains(mousePos))
+            {
+                if ((whichPlayerClicked != -1) && (whichHintClicked != -1) && (game.wichPlayerTurn == 1) && (game.hintTokens > 0) && (!game.gameEnd))
+                {
+                    game.resetAIDelay();
+                    game.giveHint(CardAttribute(whichHintClicked+1), Player(whichPlayerClicked+2));
+                    whichPlayerClicked = -1;
+                    whichHintClicked = -1;
+                    whichCardClicked = -1;
+                }
+            }
+        }
+    }
+    if (event.type == sf::Event::MouseWheelScrolled)
+    {
+        sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
+        sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
+        if (logOutline.getGlobalBounds().contains(mousePos))
+        {
+            if ((logStart < int(game.logList.size())-1) && (event.mouseWheelScroll.delta == -1))
+            {
+                logStart++;
+            }
+            if ((logStart > 0) && (event.mouseWheelScroll.delta == 1))
+            {
+                logStart--;
             }
         }
     }
