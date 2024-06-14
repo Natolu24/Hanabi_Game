@@ -45,7 +45,7 @@ GameSystem::GameSystem(PlayerCount pNumber)// : certaintyAi(Certainty(*this)), o
 
 void GameSystem::startGame(PlayerCount pNumber)
 {
-    aiType = AITypes::Certainty;
+    aiType = AITypes::Omniscient;
     playersNumber = pNumber;
     std::random_device rd = std::random_device {};
     std::default_random_engine rng = std::default_random_engine { rd() };
@@ -558,11 +558,13 @@ void GameSystem::nextTurn()
     // if won, then end
     if (score == 25)
     {
+        addLog("GAME END| Game has been won !");
         gameEnd = true;
     }
     // if 3 errors, then end
     if (errorTokens == 3)
     {
+        addLog("GAME END| 3 errors...");
         gameEnd = true;
     }
     // decrement countdown
@@ -577,6 +579,7 @@ void GameSystem::nextTurn()
     // if countdown reached 0, then end
     if (endCountdown == 0)
     {
+        addLog("GAME END| No more turns.");
         gameEnd = true;
     }
 }
@@ -690,6 +693,11 @@ void GameSystem::addLog(int player, CardAttribute hint)
         default:
             break;
     }
+}
+
+void GameSystem::addLog(std::string text)
+{
+    logList.push_back(text);
 }
 
 std::vector<Card>& GameSystem::getPlayerCards(int player)

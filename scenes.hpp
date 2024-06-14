@@ -217,8 +217,35 @@ public:
 
 class AITestingScene
 {
+public:
     sf::RenderWindow& mWindow;
     sf::Font& mFont;
+
+    sf::Text Result;
+    sf::Text GameNumber;
+    sf::Text AverageText;
+
+    sf::Texture BackTextWhite;
+    sf::Texture BackTextBlack;
+    sf::Texture returnButtonTexture;
+    sf::Texture smallButtonTexture;
+
+    sf::RectangleShape seperatorLine;
+    sf::Vector2f seperatorLinePosition{ 400.0f, 437.0f };
+    sf::Vector2f seperatorLineSize{ 370.0f, 2.0f };
+
+
+    sf::Sprite smallButton;
+    sf::Text smallButtonText;
+    sf::Text PlayeText;
+    sf::Text GameText;
+    std::array<sf::String, 4> smallButtonString{ "Certainty", "Omniscient", "Rule-Based", "Hat-Principle" };
+    std::array<sf::String, 4> PlayerString{ "2", "3", "3", "4" };
+    std::array<sf::String, 4> GameString{ "5", "10", "15", "20" };
+   
+
+    RectangleShape borders[4];
+
     // UI Textures
     // UI Elements and positions
 public:

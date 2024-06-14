@@ -1021,11 +1021,148 @@ void GameScene::handleEvent(sf::Event event, Scenes& scene)
     }
 }
 
-AITestingScene::AITestingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font) {}
+AITestingScene::AITestingScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font)
+{
+    // Load all UI textures
+    if (!returnButtonTexture.loadFromFile("assets/default_texture_white.png"))
+    {
+        std::cout << "Error while loading return button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    if (!smallButtonTexture.loadFromFile("assets/default_texture.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    if (!BackTextBlack.loadFromFile("assets/1.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    if (!BackTextWhite.loadFromFile("assets/2.png"))
+    {
+        std::cout << "Error while loading small button texture" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    Result.setFont(mFont);
+    Result.setString("Result");
+    Result.setPosition(450,45);
+    Result.setCharacterSize(40);
+    Result.setFillColor(sf::Color::White);
+
+    GameNumber.setFont(mFont);
+    GameNumber.setString("Player/Games");
+    GameNumber.setPosition(50, 45);
+    GameNumber.setCharacterSize(40);
+    GameNumber.setFillColor(sf::Color::White);
+
+    PlayeText.setFont(mFont);
+    PlayeText.setCharacterSize(60);
+    PlayeText.setFillColor(sf::Color::Black);
+    GameText.setFont(mFont);
+    GameText.setCharacterSize(50);
+    GameText.setFillColor(sf::Color::Black);
+
+
+    smallButton.setTexture(returnButtonTexture);
+    smallButton.setTextureRect({ 0,0,80,80 });
+    seperatorLine.setSize(seperatorLineSize);
+    seperatorLine.setOutlineColor(sf::Color::White);
+
+    for (size_t i = 0; i < 2; ++i) {
+        borders[i].setPosition(400 + 400 * i, 150);
+        borders[i].setSize(sf::Vector2f(370, 220)); 
+        borders[i].setFillColor(sf::Color::White); 
+        borders[i].setFillColor(sf::Color::Transparent);
+        borders[i].setOutlineColor(sf::Color::White);
+        borders[i].setOutlineThickness(2.0f);
+    }
+    for (size_t i = 2; i < 4; ++i) {
+        borders[i].setPosition(400 + 400 * (i-2),400);
+        borders[i].setSize(sf::Vector2f(370, 220)); 
+        borders[i].setFillColor(sf::Color::White); 
+        borders[i].setFillColor(sf::Color::Transparent);
+        borders[i].setOutlineColor(sf::Color::White);
+        borders[i].setOutlineThickness(2.0f);
+    }
+ 
+}
 
 void AITestingScene::draw()
 {
     mWindow.clear(sf::Color::Black);
+
+    mWindow.draw(Result);
+    mWindow.draw(GameNumber);
+    for (size_t i = 0; i < 4; ++i) {
+        mWindow.draw(borders[i]);
+    }
+    for (int n = 0; n < 4; n++)
+    {
+        if (n < 2)
+        {
+            seperatorLine.setPosition(400.0f + n * 400, 437.0f);
+        }
+        else
+            seperatorLine.setPosition(400.0f+(n-2)*400, 187.0f);
+
+        mWindow.draw(seperatorLine);
+    }
+    for (int n = 0; n < 8; n++)
+    {
+        
+
+        if (n < 4)
+        {
+            smallButton.setPosition(100, 100 * n + 180);
+            mWindow.draw(smallButton);
+            PlayeText.setString(PlayerString[n]);
+            PlayeText.setPosition(120,100*n+180);
+            mWindow.draw(PlayeText);
+        }
+        else
+        {
+            smallButton.setPosition(200, 100 * (n - 4) + 180);
+            mWindow.draw(smallButton);
+            GameText.setString(GameString[n-4]);
+            GameText.setPosition(210, 100 * (n - 4) + 185);
+            mWindow.draw(GameText);
+        }
+    }
+
+   
+    smallButtonText.setFont(mFont);
+    smallButtonText.setCharacterSize(24);
+    smallButtonText.setFillColor(sf::Color::White);
+    AverageText.setFont(mFont);
+    AverageText.setCharacterSize(24);
+    AverageText.setFillColor(sf::Color::White);
+    AverageText.setString("Average");
+    //mWindow.draw(AverageText);
+
+    smallButtonText.setPosition(405, 150);
+    smallButtonText.setString(smallButtonString[0] + " | Mean : ");
+    AverageText.setPosition(700,150);
+    mWindow.draw(smallButtonText);
+
+    smallButtonText.setPosition(405, 400);
+    smallButtonText.setString(smallButtonString[1] + " | Mean : ");
+    mWindow.draw(smallButtonText);
+
+    smallButtonText.setPosition(805, 150);
+    smallButtonText.setString(smallButtonString[2] + " | Mean : ");
+    mWindow.draw(smallButtonText);
+
+ 
+    smallButtonText.setPosition(805, 400);
+    smallButtonText.setString(smallButtonString[3] + " | Mean : ");
+    mWindow.draw(smallButtonText);
+
+    
+   
+  
+
     mWindow.display();
 }
 

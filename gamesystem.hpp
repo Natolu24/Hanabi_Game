@@ -57,6 +57,7 @@ public:
     std::string playerToString(int player);
     void addLog(bool play, int index);
     void addLog(int player, CardAttribute hint);
+    void addLog(std::string text);
     std::vector<Card>& getPlayerCards(int player);
     CardAttribute getStackByIndex(int index);
     int getCopyNmbOfCardInDiscard(CardAttribute number, CardAttribute color);
