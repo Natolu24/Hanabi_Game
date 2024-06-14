@@ -66,6 +66,7 @@ void GameSystem::startGame(PlayerCount pNumber)
     endCountdown = -1;
     setupCards(rng);
     gameEnd = false;
+    isAIGame = false;
     isInstantAIGame = false;
     time = std::chrono::high_resolution_clock::now();
     timer = time + std::chrono::milliseconds(delay);
@@ -93,6 +94,7 @@ void GameSystem::startGame(PlayerCount pNumber, AITypes ai)
     endCountdown = -1;
     setupCards(rng);
     gameEnd = false;
+    isAIGame = true;
     isInstantAIGame = false;
     time = std::chrono::high_resolution_clock::now();
     timer = time + std::chrono::milliseconds(delay);
@@ -101,6 +103,7 @@ void GameSystem::startGame(PlayerCount pNumber, AITypes ai)
 int GameSystem::startGame(PlayerCount pNumber, AITypes ai, std::default_random_engine& rng)
 {
     aiType = ai;
+    isAIGame = true;
     isInstantAIGame = true;
     playersNumber = pNumber;
     std::uniform_int_distribution<int> randomStartPlayer(1, int(pNumber));
@@ -119,6 +122,12 @@ int GameSystem::startGame(PlayerCount pNumber, AITypes ai, std::default_random_e
     endCountdown = -1;
     setupCards(rng);
     gameEnd = false;
+    time = std::chrono::high_resolution_clock::now();
+    timer = time;
+    while (!gameEnd)
+    {
+        gameLoop();
+    }
     return score;
 }
 
@@ -216,7 +225,7 @@ void GameSystem::setupCards(std::default_random_engine& rng)
 void GameSystem::gameLoop()
 {
     // "gameloop", if player turn, then do nothing and wait for player interaction to play, otherwise wait timer for AI to play
-    if (Player(wichPlayerTurn) == Player::P0 || gameEnd)
+    if (((Player(wichPlayerTurn) == Player::P0) && (!isAIGame)) || gameEnd)
     {
         return;
     }
@@ -240,7 +249,10 @@ void GameSystem::gameLoop()
             case AITypes::null:
                 break;
         }
-        timer = time + std::chrono::milliseconds(delay);
+        if (!isInstantAIGame)
+        {
+            timer = time + std::chrono::milliseconds(delay);
+        }
     }
 }
 

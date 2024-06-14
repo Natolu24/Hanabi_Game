@@ -5,6 +5,8 @@
 using namespace sf;
 enum class Scenes { MENU, SETTING, GAME, AITESTING };
 
+class GameScene;
+
 class MenuScene
 {
     sf::RenderWindow& mWindow;
@@ -28,6 +30,9 @@ public:
 
 class SettingScene
 {
+    int whichSideClicked = -1;
+    int whichNumberClicked = -1;
+    int whichAIClicked = -1;
     sf::RenderWindow& mWindow;
     sf::Font& mFont;
     // UI Textures
@@ -69,7 +74,7 @@ public:
     
     SettingScene(sf::RenderWindow& window, sf::Font& font);
     void draw(Scenes* mState);
-    void handleEvent(sf::Event);
+    void handleEvent(sf::Event event, Scenes& scene, GameScene& gameScene);
 };
 
 class GameScene
@@ -210,7 +215,8 @@ class GameScene
 public:
     GameSystem game;
     GameScene(sf::RenderWindow& window, sf::Font& font);
-    void setup();
+    void setup(int number);
+    void setup(int number, int ai);
     void draw();
     void handleEvent(sf::Event, Scenes& scene);
 };

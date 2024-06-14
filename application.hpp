@@ -9,7 +9,7 @@ class Application
     sf::Font mFont;
 public:
     // The state determining wich current scene is running
-    Scenes mState = Scenes::GAME;
+    Scenes mState = Scenes::MENU;
     // All the different scenes of the application
     MenuScene mMenu;
     SettingScene mSetting;

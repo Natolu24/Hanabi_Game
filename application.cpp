@@ -33,7 +33,7 @@ void Application::run()
                     mMenu.handleEvent(event);
                     break;
                 case Scenes::SETTING:
-                    mSetting.handleEvent(event);
+                    mSetting.handleEvent(event, mState, mGame);
                     break;
                 case Scenes::GAME:
                     mGame.handleEvent(event, mState);

@@ -33,7 +33,7 @@ public:
     PlayerCount playersNumber;
     AITypes aiType;
     int turn, wichPlayerTurn, score, hintTokens, errorTokens, endCountdown;
-    bool gameEnd, isInstantAIGame;
+    bool gameEnd, isAIGame, isInstantAIGame;
     std::chrono::time_point<std::chrono::high_resolution_clock> time, timer;
     int delay = 1000;
     std::vector<Card> drawPile, discardPile;

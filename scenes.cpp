@@ -45,14 +45,31 @@ MenuScene::MenuScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
 
 void MenuScene::draw(Scenes* mState)
 {
-    sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-    if (playButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+    sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
+    sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
+    if (playButton.getGlobalBounds().contains(mousePos))
     {
-    
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
             *mState = Scenes::SETTING;
         }
+        playButton.setFillColor(sf::Color(124, 124, 124));
+    }
+    else
+    {
+        playButton.setFillColor(sf::Color::White);
+    }
+    if (aiButton.getGlobalBounds().contains(mousePos))
+    {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            *mState = Scenes::AITESTING;
+        }
+        aiButton.setFillColor(sf::Color(124, 124, 124));
+    }
+    else
+    {
+        aiButton.setFillColor(sf::Color::White);
     }
     mWindow.clear(sf::Color::Black);
     mWindow.draw(titleText);
@@ -245,6 +262,10 @@ void SettingScene::draw(Scenes* mState)
             if (i >= 8 && i <= 11)
                 smallButton.setTextureRect({ 0,0,500,80 });
         }
+        if (whichNumberClicked == i || whichAIClicked == i)
+        {
+            smallButton.setTexture(smallButtonTexture);
+        }
         mWindow.draw(smallButton);
 
         smallButtonText[i].setFont(mFont);
@@ -263,9 +284,73 @@ void SettingScene::draw(Scenes* mState)
     mWindow.display();
 }
 
-void SettingScene::handleEvent(sf::Event)
+void SettingScene::handleEvent(sf::Event event, Scenes& scene, GameScene& gameScene)
 {
+    if (event.type == sf::Event::MouseButtonReleased)
+    {
+        sf::Vector2i mousePosInWindow = sf::Mouse::getPosition(mWindow);
+        sf::Vector2f mousePos = mWindow.mapPixelToCoords(mousePosInWindow);
+        for (int i = 0; i < 12; i++)
+        {
+            smallButton.setPosition(smallButtonPosition[i]);
+            if (i >= 0 && i <= 7)
+                smallButton.setTextureRect({ 0,0,80,80 });
+            if (i >= 8 && i <= 11)
+                smallButton.setTextureRect({ 0,0,500,80 });
 
+            if (smallButton.getGlobalBounds().contains(mousePos))
+            {
+                if (i <= 7)
+                {
+                    if (whichNumberClicked != i)
+                    {
+                        whichNumberClicked = i;
+                        if (whichSideClicked == -1 && i >= 4)
+                        {
+                            whichSideClicked = 1;
+                        }
+                        if (whichSideClicked == 1 && i < 4)
+                        {
+                            whichSideClicked = -1;
+                            whichAIClicked = -1;
+                        }
+                    }
+                    else
+                    {
+                        whichNumberClicked = -1;
+                    }
+                }
+                else
+                {
+                    if (whichAIClicked != i)
+                    {
+                        whichAIClicked = i;
+                        if (whichSideClicked == -1)
+                        {
+                            whichSideClicked = 1;
+                            whichNumberClicked = -1;
+                        }
+                    }
+                    else
+                    {
+                        whichAIClicked = -1;
+                    }
+                }
+            }
+        }
+        if (playButton.getGlobalBounds().contains(mousePos))
+        {
+            if (whichSideClicked == -1)
+            {
+                gameScene.setup((whichNumberClicked%4)+2);
+            }
+            else
+            {
+                gameScene.setup((whichNumberClicked%4)+2, whichAIClicked-7);
+            }
+            scene = Scenes::GAME;
+        }
+    }
 }
 
 GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window), mFont(font), game(SettingScene::playerGameCount) // TMP TO BE DELETED
@@ -422,11 +507,16 @@ GameScene::GameScene(sf::RenderWindow& window, sf::Font& font) : mWindow(window)
     discardText.setFillColor(sf::Color::Black);
 }
 
-void GameScene::setup()
+void GameScene::setup(int number)
 {
-    //mGame.setup()
+    logStart = 0;
+    game.startGame(PlayerCount(number));
+}
 
-
+void GameScene::setup(int number, int ai)
+{
+    logStart = 0;
+    game.startGame(PlayerCount(number), AITypes(ai));
 }
 
 void GameScene::draw()
@@ -970,7 +1060,7 @@ void GameScene::handleEvent(sf::Event event, Scenes& scene)
             }
             if (gameplayPlayButton.getGlobalBounds().contains(mousePos))
             {
-                if ((whichCardClicked != -1) && (game.wichPlayerTurn == 1) && (!game.gameEnd))
+                if ((whichCardClicked != -1) && (game.wichPlayerTurn == 1) && (!game.gameEnd) && (!game.isAIGame))
                 {
                     game.resetAIDelay();
                     game.playCard(whichCardClicked);
@@ -981,7 +1071,7 @@ void GameScene::handleEvent(sf::Event event, Scenes& scene)
             }
             if (gameplayDiscardButton.getGlobalBounds().contains(mousePos))
             {
-                if ((whichCardClicked != -1) && (game.wichPlayerTurn == 1) && (!game.gameEnd))
+                if ((whichCardClicked != -1) && (game.wichPlayerTurn == 1) && (!game.gameEnd) && (!game.isAIGame))
                 {
                     game.resetAIDelay();
                     game.discardCard(whichCardClicked);
@@ -992,7 +1082,7 @@ void GameScene::handleEvent(sf::Event event, Scenes& scene)
             }
             if (gameplayHintButton.getGlobalBounds().contains(mousePos))
             {
-                if ((whichPlayerClicked != -1) && (whichHintClicked != -1) && (game.wichPlayerTurn == 1) && (game.hintTokens > 0) && (!game.gameEnd))
+                if ((whichPlayerClicked != -1) && (whichHintClicked != -1) && (game.wichPlayerTurn == 1) && (game.hintTokens > 0) && (!game.gameEnd) && (!game.isAIGame))
                 {
                     game.resetAIDelay();
                     game.giveHint(CardAttribute(whichHintClicked+1), Player(whichPlayerClicked+2));
