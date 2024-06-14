@@ -667,7 +667,8 @@ bool tryDiscardSafe(GameSystem& gameSys)
 */
 void RuleBased::genMove(GameSystem& gameSys)
 {
-
+    // default bad move if none of the above didn't checked (should not happen ?)
+    gameSys.playCard(0);
 }
 
 /*
@@ -675,7 +676,8 @@ void RuleBased::genMove(GameSystem& gameSys)
 */
 void HatPrinciple::genMove(GameSystem& gameSys)
 {
-
+    // default bad move if none of the above didn't checked (should not happen ?)
+    gameSys.playCard(0);
 }
 
 
